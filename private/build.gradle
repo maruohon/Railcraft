@@ -13,7 +13,7 @@ sourceSets {
     }
 }
 
-task releaseInit << {
+project(":").releaseInit << {
 	println '*************************************************************'
 	println 'Building Release Build'
 	println '*************************************************************'
