@@ -113,14 +113,14 @@ rootProject.release.dependsOn pushRelease
 
 rootProject.build.dependsOn pushNotes
 
-uploadArchives {
-	repositories {
-		if( project.hasProperty('forgeMavenUsername') && project.hasProperty('forgeMavenPassword') ) {
-			mavenDeployer {
-				repository(url: "http://files.minecraftforge.net/maven/manage/upload") {
-					authentication(userName: forgeMavenUsername, password: forgeMavenPassword)
-				}
-			}
-		}
-	}
-}
+// uploadArchives {
+	// repositories {
+		// if( project.hasProperty('forgeMavenUsername') && project.hasProperty('forgeMavenPassword') ) {
+			// mavenDeployer {
+				// repository(url: "http://files.minecraftforge.net/maven/manage/upload") {
+					// authentication(userName: forgeMavenUsername, password: forgeMavenPassword)
+				// }
+			// }
+		// }
+	// }
+// }
