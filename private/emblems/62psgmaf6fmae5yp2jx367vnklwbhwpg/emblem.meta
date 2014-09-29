@@ -1,0 +1,4 @@
+name=Knowledge
+texture=%minecraft_item%/book_normal.png
+rarity=0
+effect=false

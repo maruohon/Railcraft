@@ -1,0 +1,4 @@
+name=Jack-o'-lantern
+texture=%minecraft_block%/pumpkin_face_on.png
+rarity=1
+effect=false

@@ -1,0 +1,4 @@
+name=Fireworks
+texture=%minecraft_item%/fireworks.png
+rarity=0
+effect=false

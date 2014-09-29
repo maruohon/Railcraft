@@ -1,0 +1,4 @@
+name=Zombie
+texture=%minecraft_item%/skull_zombie.png
+rarity=1
+effect=false

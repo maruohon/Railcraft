@@ -1,0 +1,4 @@
+name=Sleeper
+texture=%minecraft_item%/bed.png
+rarity=0
+effect=false

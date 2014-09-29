@@ -1,0 +1,14 @@
+ext.privateSrc = "./private/src/main/java"
+
+ext.privateResources = "./private/src/main/resources"
+
+sourceSets {
+    main {
+        java {
+            srcDir project.privateSrc
+        }
+        resources {
+            srcDir project.privateResources
+        }
+    }
+}

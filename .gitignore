@@ -17,6 +17,5 @@ settings.gradle
 .idea/
 *.iml
 run/
-private/
 *.ipr
 *.iws
