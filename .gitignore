@@ -12,7 +12,6 @@ README.txt
 .classpath
 .project
 /gradle.properties
-push/
 .idea/
 *.iml
 run/

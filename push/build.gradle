@@ -1,0 +1,126 @@
+ext.dirDropbox = 'C:/Users/CovertJaguar/Dropbox'
+ext.dirDropboxRailcraft = dirDropbox + '/Public/Minecraft/Railcraft'
+ext.dirDropboxPahiCraft = dirDropbox + '/PahiCraft'
+ext.dirDropboxPahiCraftNotes = dirDropboxPahiCraft + '/Docs/Change Logs'
+
+ext.dirSeafile = 'C:/Users/CovertJaguar/Seafile'
+ext.dirForgeCraft = dirSeafile + '/ForgeCraft/incoming'
+
+ext.dirGoogle = 'C:/Users/CovertJaguar/Google Drive'
+ext.dirGoogleRailcraft = dirGoogle + '/Minecraft/Railcraft'
+
+ext.doPush = false
+
+class CopySafe extends Copy {
+    public CopySafe () {
+        onlyIf {
+            if(!destinationDir.exists()) {
+                throw new GradleException('Destination does not exist! '+ destinationDir)
+            }
+            return true
+        }
+    }
+}
+
+class CopyAsk extends CopySafe {
+    public CopyAsk () {
+        onlyIf {
+            return project.doPush
+        }
+    }
+}
+
+task pushQuery << {
+    def console = System.console()
+    if (console) {
+        def input = console.readLine('%n> Push Build? ').toLowerCase()
+        project.doPush = input.contentEquals("yes") || input.contentEquals("y")
+    } else {
+        logger.error "Cannot get console."
+    }
+}
+
+task pushDevJarToGoogle ( type: CopyAsk,  dependsOn: [rootProject.devJar, pushQuery] ) {
+    from rootProject.devJar.archivePath
+    into dirGoogleRailcraft
+}
+
+
+task pushMainJarToGoogle ( type: CopyAsk,  dependsOn: [rootProject.mainJar, pushQuery] ) {
+    from rootProject.mainJar.archivePath
+    into dirGoogleRailcraft
+}
+
+task pushMainJarToForgeCraft ( type: CopyAsk,  dependsOn: [rootProject.mainJar, pushQuery] ) {
+    from rootProject.mainJar.archivePath
+    into dirForgeCraft
+}
+
+task pushAPI ( type: CopyAsk, dependsOn: [rootProject.apiZip, pushQuery] ) {
+    from rootProject.apiZip.archivePath
+    into dirGoogleRailcraft
+}
+
+task pushAPILatest ( type: CopyAsk, dependsOn: [rootProject.apiZip, pushQuery] ) {
+    from rootProject.apiZip.archivePath
+    into dirDropboxRailcraft
+    rename { String fileName ->
+        fileName = 'Railcraft_latest-api.zip'
+    }
+}
+
+task pushNotesToDropbox ( type: CopySafe, dependsOn: [pushQuery] ) {
+    from(sourceSets.main.resources.srcDirs) {
+        include 'change_log.txt'
+    }
+    into dirDropboxRailcraft
+}
+
+task pushNotesToPahiCraft ( type: CopySafe, dependsOn: [pushQuery] ) {
+    from(sourceSets.main.resources.srcDirs) {
+        include 'change_log.txt'
+    }
+    into dirDropboxPahiCraftNotes
+}
+
+task pushNotesToGoogle ( type: CopySafe, dependsOn: [pushQuery] ) {
+    from(sourceSets.main.resources.srcDirs) {
+        include 'change_log.txt'
+    }
+    into dirGoogleRailcraft
+}
+
+task pushNotes (dependsOn: [pushNotesToDropbox, pushNotesToPahiCraft, pushNotesToGoogle]){
+}
+
+task updateBetaVersionCheck ( dependsOn: [pushQuery] )  {
+    onlyIf {
+        return project.doPush
+    }
+    doFirst(){
+        ant.echo (
+            message: rootProject.project.version,
+            file: dirDropboxRailcraft + '/version_beta.txt'
+        )
+    }
+}
+
+task pushRelease {
+}
+pushRelease.dependsOn pushDevJarToGoogle, pushMainJarToGoogle, pushMainJarToForgeCraft, pushAPI, pushAPILatest, pushNotes, updateBetaVersionCheck
+
+rootProject.release.dependsOn pushRelease
+
+rootProject.build.dependsOn pushNotes
+
+uploadArchives {
+	repositories {
+		if( project.hasProperty('forgeMavenUsername') && project.hasProperty('forgeMavenPassword') ) {
+			mavenDeployer {
+				repository(url: "http://files.minecraftforge.net/maven/manage/upload") {
+					authentication(userName: forgeMavenUsername, password: forgeMavenPassword)
+				}
+			}
+		}
+	}
+}
