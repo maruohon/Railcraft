@@ -57,7 +57,8 @@ public class ModuleEmblem extends RailcraftModule {
                     Certificate[] cert = core.getProtectionDomain().getCodeSource().getCertificates();
                     if (cert == null || !CertificateHelper.getFingerprint(cert[0]).equals("a0c255ac501b2749537d5824bb0f0588bf0320fa")) {
                         Game.logErrorFingerprint("Railcraft");
-                        FMLCommonHandler.instance().exitJava(1, false);
+//                        FMLCommonHandler.instance().exitJava(1, false);
+                        throw new RuntimeException("Invalid Fingerprint");
                     }
                 }
             } catch (ClassNotFoundException ex) {
