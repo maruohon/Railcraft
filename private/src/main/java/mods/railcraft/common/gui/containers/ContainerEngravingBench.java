@@ -1,8 +1,7 @@
 package mods.railcraft.common.gui.containers;
 
-import buildcraft.api.power.PowerHandler.PowerReceiver;
+import cofh.api.energy.EnergyStorage;
 import mods.railcraft.common.blocks.machine.alpha.TileEngravingBench;
-import mods.railcraft.common.gui.containers.RailcraftContainer;
 import mods.railcraft.common.gui.widgets.EmblemBankWidget;
 import net.minecraft.inventory.ICrafting;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -10,18 +9,21 @@ import net.minecraft.inventory.Slot;
 import mods.railcraft.common.gui.widgets.IndicatorWidget;
 import mods.railcraft.common.gui.slots.SlotOutput;
 import mods.railcraft.common.gui.slots.SlotPassThrough;
+import mods.railcraft.common.gui.widgets.RFEnergyIndicator;
 
 public class ContainerEngravingBench extends RailcraftContainer {
 
     private final TileEngravingBench tile;
     private int lastEnergy, lastProgress;
     public EmblemBankWidget emblemBank;
+    private final RFEnergyIndicator energyIndicator;
 
     public ContainerEngravingBench(final InventoryPlayer inventoryplayer, final TileEngravingBench tile) {
         super(tile);
         this.tile = tile;
 
-        addWidget(new IndicatorWidget(tile.getEnergyIndicator(), 157, 50, 176, 12, 6, 48));
+        energyIndicator = new RFEnergyIndicator(tile);
+        addWidget(new IndicatorWidget(energyIndicator, 157, 50, 176, 12, 6, 48));
 
         addWidget(emblemBank = new EmblemBankWidget(25, 25, tile.currentEmblem));
 
@@ -42,30 +44,28 @@ public class ContainerEngravingBench extends RailcraftContainer {
     @Override
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
-        PowerReceiver provider = tile.getPowerReceiver(null);
-        for (int i = 0; i < crafters.size(); i++) {
-            ICrafting icrafting = (ICrafting) crafters.get(i);
-
+        EnergyStorage storage = tile.getEnergyStorage();
+        for (Object crafter : crafters) {
+            ICrafting icrafting = (ICrafting) crafter;
             if (lastProgress != tile.getProgress())
                 icrafting.sendProgressBarUpdate(this, 0, tile.getProgress());
-
-            if (provider != null && lastEnergy != provider.getEnergyStored())
-                icrafting.sendProgressBarUpdate(this, 1, (int) provider.getEnergyStored());
+            if (storage != null && lastEnergy != storage.getEnergyStored())
+                icrafting.sendProgressBarUpdate(this, 1, storage.getEnergyStored());
         }
 
         lastProgress = tile.getProgress();
 
-        if (provider != null)
-            lastEnergy = (int) provider.getEnergyStored();
+        if (storage != null)
+            lastEnergy = storage.getEnergyStored();
     }
 
     @Override
     public void addCraftingToCrafters(ICrafting icrafting) {
         super.addCraftingToCrafters(icrafting);
         icrafting.sendProgressBarUpdate(this, 0, tile.getProgress());
-        PowerReceiver provider = tile.getPowerReceiver(null);
-        if (provider != null)
-            icrafting.sendProgressBarUpdate(this, 1, (int) provider.getEnergyStored());
+        EnergyStorage storage = tile.getEnergyStorage();
+        if (storage != null)
+            icrafting.sendProgressBarUpdate(this, 2, storage.getEnergyStored());
     }
 
     @Override
@@ -75,7 +75,10 @@ public class ContainerEngravingBench extends RailcraftContainer {
                 tile.setProgress(data);
                 break;
             case 1:
-                tile.guiEnergy = data;
+                energyIndicator.updateEnergy(data);
+                break;
+            case 2:
+                energyIndicator.setEnergy(data);
                 break;
         }
     }
