@@ -22,6 +22,7 @@ import org.apache.logging.log4j.Level;
 import mods.railcraft.common.plugins.forge.ItemRegistry;
 import mods.railcraft.api.fuel.FuelManager;
 import mods.railcraft.common.blocks.aesthetics.cube.EnumCube;
+import mods.railcraft.common.blocks.aesthetics.lantern.BlockLantern;
 import mods.railcraft.common.blocks.machine.alpha.EnumMachineAlpha;
 import mods.railcraft.common.blocks.machine.beta.EnumMachineBeta;
 import mods.railcraft.common.blocks.machine.gamma.EnumMachineGamma;
@@ -239,6 +240,8 @@ public final class Railcraft {
                     mapping.remap(BlockRCAnvil.getBlock());
                 else if (mapping.name.equals("Railcraft:tile.railcraft.hidden"))
                     mapping.ignore();
+                else if (mapping.name.equals("Railcraft:tile.railcraft.stonelamp"))
+                    mapping.remap(BlockLantern.getBlockStone());
             } else if (mapping.type == GameRegistry.Type.ITEM) {
                 if (mapping.name.equals("Railcraft:tool.mag.glass") && ItemMagnifyingGlass.item != null)
                     mapping.remap(ItemMagnifyingGlass.item);
@@ -252,6 +255,8 @@ public final class Railcraft {
                     mapping.remap(Item.getItemFromBlock(BlockRCAnvil.getBlock()));
                 else if (mapping.name.equals("Railcraft:tile.railcraft.hidden"))
                     mapping.ignore();
+                else if (mapping.name.equals("Railcraft:tile.railcraft.stonelamp"))
+                    mapping.remap(Item.getItemFromBlock(BlockLantern.getBlockStone()));
             }
         }
     }
