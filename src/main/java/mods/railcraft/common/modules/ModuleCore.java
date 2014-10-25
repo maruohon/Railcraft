@@ -92,7 +92,7 @@ public class ModuleCore extends RailcraftModule {
         SignalTools.packetBuilder = PacketBuilder.instance();
 
         RailcraftFluids.preInit();
-        MinecraftForge.EVENT_BUS.register(RailcraftFluids.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(RailcraftFluids.getTextureHook());
         MinecraftForge.EVENT_BUS.register(BucketHandler.INSTANCE);
 
         Helpers.structures = new MultiBlockHelper();
@@ -262,9 +262,11 @@ public class ModuleCore extends RailcraftModule {
     private void replaceVanillaCart(EnumCart cartType, Item original, String entityTag, int entityId) {
         cartType.registerEntity();
 
-        MinecartHooks.vanillaEntityReplacements.put(original, cartType);
+        Class<? extends EntityMinecart> minecartClass = (Class<? extends EntityMinecart>) EntityList.stringToClassMapping.remove(entityTag);
 
-        EntityList.stringToClassMapping.remove(entityTag);
+        CartUtils.classReplacements.put(minecartClass, cartType);
+        CartUtils.vanillaCartItemMap.put(original, cartType);
+
         EntityList.IDtoClassMapping.remove(entityId);
         EntityList.addMapping(cartType.getCartClass(), entityTag, entityId);
 
@@ -304,7 +306,6 @@ public class ModuleCore extends RailcraftModule {
                 ItemRegistry.registerItemStack(machine.getTag(), machine.getItem());
         }
 
-//        CreeperPlugin.postSetup();
 //----------------------------------------------
 // Boiler Test Setup
 // ---------------------------------------------

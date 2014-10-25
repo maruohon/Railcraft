@@ -9,6 +9,8 @@
 package mods.railcraft.common.carts;
 
 import java.util.List;
+
+import mods.railcraft.common.blocks.tracks.EnumTrackMeta;
 import mods.railcraft.common.util.misc.Game;
 import net.minecraft.entity.item.EntityMinecartContainer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.minecart.MinecartInteractEvent;
 
 /**
@@ -25,6 +28,9 @@ import net.minecraftforge.event.entity.minecart.MinecartInteractEvent;
  * @author CovertJaguar <http://www.railcraft.info>
  */
 public abstract class CartContainerBase extends EntityMinecartContainer implements IRailcraftCart {
+
+    protected ForgeDirection travelDirection = ForgeDirection.UNKNOWN;
+    private final ForgeDirection[] travelDirectionHistory = new ForgeDirection[2];
 
     public CartContainerBase(World world) {
         super(world);
@@ -88,6 +94,32 @@ public abstract class CartContainerBase extends EntityMinecartContainer implemen
     @Override
     public int getMinecartType() {
         return -1;
+    }
+
+    protected void updateTravelDirection(int trackX, int trackY, int trackZ, int meta) {
+        EnumTrackMeta trackMeta = EnumTrackMeta.fromMeta(meta);
+        if (trackMeta != null) {
+            ForgeDirection forgeDirection = determineTravelDirection(trackMeta);
+            ForgeDirection previousForgeDirection = travelDirectionHistory[1];
+            if (previousForgeDirection != ForgeDirection.UNKNOWN && travelDirectionHistory[0] == previousForgeDirection)
+                travelDirection = forgeDirection;
+            travelDirectionHistory[0] = previousForgeDirection;
+            travelDirectionHistory[1] = forgeDirection;
+        }
+    }
+
+    private ForgeDirection determineTravelDirection(EnumTrackMeta trackMeta) {
+        if (trackMeta.isStraightTrack()) {
+            if (posX - prevPosX > 0)
+                return ForgeDirection.EAST;
+            if (posX - prevPosX < 0)
+                return ForgeDirection.WEST;
+            if (posZ - prevPosZ > 0)
+                return ForgeDirection.SOUTH;
+            if (posZ - prevPosZ < 0)
+                return ForgeDirection.NORTH;
+        }
+        return ForgeDirection.UNKNOWN;
     }
 
 }

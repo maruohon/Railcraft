@@ -8,8 +8,6 @@
  */
 package mods.railcraft.common.carts;
 
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -19,29 +17,18 @@ import mods.railcraft.api.carts.CartTools;
 import mods.railcraft.api.carts.IItemTransfer;
 import mods.railcraft.common.util.inventory.InvTools;
 import mods.railcraft.common.util.inventory.StandaloneInventory;
-import mods.railcraft.common.util.misc.Game;
 import net.minecraft.inventory.ISidedInventory;
 
 /**
  *
  * @author CovertJaguar <http://www.railcraft.info>
  */
-public abstract class CartMaintanceBase extends CartContainerBase implements ISidedInventory {
+public abstract class CartMaintenancePatternBase extends CartMaintenanceBase implements ISidedInventory {
 
-    protected static final double DRAG_FACTOR = 0.9;
-    protected static final float MAX_SPEED = 0.1f;
-    private static final int BLINK_DURATION = 3;
-    private static final int DATA_ID_BLINK = 25;
     protected final StandaloneInventory patternInv = new StandaloneInventory(6, this);
 
-    public CartMaintanceBase(World world) {
+    public CartMaintenancePatternBase(World world) {
         super(world);
-    }
-
-    @Override
-    protected void entityInit() {
-        super.entityInit();
-        dataWatcher.addObject(DATA_ID_BLINK, new Byte((byte) 0));
     }
 
     public IInventory getPattern() {
@@ -53,33 +40,14 @@ public abstract class CartMaintanceBase extends CartContainerBase implements ISi
         return 1;
     }
 
-    protected void blink() {
-        dataWatcher.updateObject(DATA_ID_BLINK, (byte) BLINK_DURATION);
-    }
-
-    protected void setBlink(byte blink) {
-        dataWatcher.updateObject(DATA_ID_BLINK, (byte) blink);
-    }
-
-    protected byte getBlink() {
-        return dataWatcher.getWatchableObjectByte(DATA_ID_BLINK);
+    @Override
+    public boolean canExtractItem(int slot, ItemStack stack, int side) {
+        return false;
     }
 
     @Override
-    public void onUpdate() {
-        super.onUpdate();
-        if (Game.isNotHost(worldObj))
-            return;
-
-        if (isBlinking())
-            setBlink((byte) (getBlink() - 1));
-    }
-
-    @Override
-    public List<ItemStack> getItemsDropped() {
-        List<ItemStack> items = new ArrayList<ItemStack>();
-        items.add(getCartItem());
-        return items;
+    public boolean canInsertItem(int slot, ItemStack stack, int side) {
+        return isItemValidForSlot(slot, stack);
     }
 
     protected void stockItems(int slotReplace, int slotStock) {
@@ -119,35 +87,6 @@ public abstract class CartMaintanceBase extends CartContainerBase implements ISi
                         stackStock.stackSize++;
             }
         }
-    }
-
-    @Override
-    public boolean canBeRidden() {
-        return false;
-    }
-
-    @Override
-    public boolean canExtractItem(int slot, ItemStack stack, int side) {
-        return false;
-    }
-
-    @Override
-    public boolean canInsertItem(int slot, ItemStack stack, int side) {
-        return isItemValidForSlot(slot, stack);
-    }
-
-    @Override
-    public double getDrag() {
-        return EntityCartTrackRelayer.DRAG_FACTOR;
-    }
-
-    @Override
-    public float getMaxCartSpeedOnRail() {
-        return MAX_SPEED;
-    }
-
-    public boolean isBlinking() {
-        return dataWatcher.getWatchableObjectByte(DATA_ID_BLINK) > 0;
     }
 
     @Override
