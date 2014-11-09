@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) CovertJaguar, 2014 http://railcraft.info
  * 
  * This code is the property of CovertJaguar
@@ -6,17 +6,16 @@
  * permission unless otherwise specified on the
  * license page at http://railcraft.info/wiki/info:license.
  */
-package mods.railcraft.common.blocks.aesthetics.wall;
+package mods.railcraft.common.plugins.buildcraft.actions;
 
-import java.util.List;
+import buildcraft.api.statements.IActionExternal;
 
 /**
  *
- * @author CovertJaguar <http://www.railcraft.info>
+ * @author CovertJaguar <http://www.railcraft.info/>
  */
-public interface WallProxy {
+public interface IActionReceptor {
 
-    List<? extends WallInfo> getCreativeList();
+    void actionActivated(IActionExternal action);
 
-    WallInfo fromMeta(int meta);
 }
