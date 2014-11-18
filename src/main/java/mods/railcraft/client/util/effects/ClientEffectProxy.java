@@ -24,8 +24,7 @@ import mods.railcraft.client.particles.EntityChunkLoaderFX;
 import mods.railcraft.client.particles.EntitySteamFX;
 import mods.railcraft.client.particles.EntityTuningFX;
 import mods.railcraft.api.signals.SignalTools;
-import mods.railcraft.client.particles.EntityFireSparkFX;
-import mods.railcraft.client.particles.EntityHeatTrailFX;
+import mods.railcraft.client.particles.*;
 import mods.railcraft.common.items.ItemGoggles;
 import mods.railcraft.common.items.ItemGoggles.Aura;
 import mods.railcraft.common.util.effects.CommonEffectProxy;
@@ -63,7 +62,6 @@ public class ClientEffectProxy extends CommonEffectProxy {
 //            float vZ = (rand.nextFloat() - 0.5F) * 0.2F;
 //            Game.getWorld().spawnParticle("portal", startX, startY, startZ, vX, vY, vZ);
 //        }
-
         for (int i = 0; i < TELEPORT_PARTICLES; i++) {
             double travel = (double) i / ((double) TELEPORT_PARTICLES - 1.0D);
             float vX = (rand.nextFloat() - 0.5F) * 0.2F;
@@ -74,6 +72,22 @@ public class ClientEffectProxy extends CommonEffectProxy {
             double pZ = startZ + (destZ - startZ) * travel + (rand.nextDouble() - 0.5D) * 2.0D;
             Game.getWorld().spawnParticle("portal", pX, pY, pZ, vX, vY, vZ);
         }
+    }
+
+    public void doForceSpawn(DataInputStream data) throws IOException {
+        if (!shouldSpawnParticle(true))
+            return;
+
+        int x = data.readInt();
+        int y = data.readInt();
+        int z = data.readInt();
+        double vx = rand.nextGaussian() * 0.1;
+        double vy = rand.nextDouble() * 0.01;
+        double vz = rand.nextGaussian() * 0.1;
+        spawnParticle(new EntityForceSpawnFX(Game.getWorld(), x + 0.1, y, z + 0.1, vx, vy, vz));
+        spawnParticle(new EntityForceSpawnFX(Game.getWorld(), x + 0.9, y, z + 0.1, vx, vy, vz));
+        spawnParticle(new EntityForceSpawnFX(Game.getWorld(), x + 0.1, y, z + 0.9, vx, vy, vz));
+        spawnParticle(new EntityForceSpawnFX(Game.getWorld(), x + 0.9, y, z + 0.9, vx, vy, vz));
     }
 
     @Override
@@ -165,6 +179,9 @@ public class ClientEffectProxy extends CommonEffectProxy {
             case FIRESPARK:
                 doFireSpark(data);
                 break;
+            case FORCE_SPAWN:
+                doForceSpawn(data);
+                break;
         }
     }
 
@@ -182,7 +199,6 @@ public class ClientEffectProxy extends CommonEffectProxy {
             double yCorner = es.getY() - 8;
 
 //            System.out.println(xCorner + ", " + zCorner);
-
             if (rand.nextInt(3) == 0) {
                 if (!shouldSpawnParticle(false))
                     continue;
@@ -234,9 +250,7 @@ public class ClientEffectProxy extends CommonEffectProxy {
             particleSetting = 1;
         if (particleSetting == 1 && MiscTools.RANDOM.nextInt(3) == 0)
             particleSetting = 2;
-        if (particleSetting > 1)
-            return false;
-        return true;
+        return particleSetting <= 1;
     }
 
     @Override

@@ -47,6 +47,7 @@ import mods.railcraft.common.plugins.forge.PowerPlugin;
 import mods.railcraft.common.util.inventory.InvTools;
 import mods.railcraft.common.util.misc.Game;
 import mods.railcraft.common.util.misc.MiscTools;
+import mods.railcraft.common.util.misc.RailcraftDamageSource;
 import net.minecraft.block.Block;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.entity.EntityLivingBase;
@@ -81,11 +82,9 @@ public class BlockTrack extends BlockRailBase implements IPostConnection {
 
         Set<TrackSpec> railcraftSpecs = new HashSet<TrackSpec>();
         for (EnumTrack track : EnumTrack.getCreativeList()) {
-            TrackSpec spec = specs.get((short) track.ordinal());
-            if (spec == null)
-                continue;
+            TrackSpec spec = track.getTrackSpec();
             railcraftSpecs.add(spec);
-            if (track.isEnabled())
+            if (track.isEnabled() && !track.isHidden())
                 list.add(spec.getItem());
         }
 
@@ -209,7 +208,7 @@ public class BlockTrack extends BlockRailBase implements IPostConnection {
                     ItemStack pants = player.getCurrentArmor(MiscTools.ArmorSlots.LEGS.ordinal());
                     player.setCurrentItemOrArmor(MiscTools.ArmorSlots.LEGS.ordinal() + 1, InvTools.damageItem(pants, 1));
                 }
-            } else if (((EntityLivingBase) entity).attackEntityFrom(DamageSourceElectricTrack.INSTANCE, 2))
+            } else if (((EntityLivingBase) entity).attackEntityFrom(RailcraftDamageSource.TRACK_ELECTRIC, 2))
                 chargeHandler.removeCharge(2000);
     }
 
@@ -413,6 +412,7 @@ public class BlockTrack extends BlockRailBase implements IPostConnection {
         TileEntity t = world.getTileEntity(i, j, k);
         if (t instanceof TileTrack) {
             TileTrack tile = (TileTrack) t;
+            tile.onNeighborBlockChange(block);
             tile.getTrackInstance().onNeighborBlockChange(block);
         }
     }

@@ -19,7 +19,9 @@ import mods.railcraft.common.items.RailcraftItem;
 import mods.railcraft.common.items.RailcraftPartItems;
 import mods.railcraft.common.plugins.forge.CraftingPlugin;
 import mods.railcraft.common.util.crafting.RotorRepairRecipe;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 /**
@@ -63,8 +65,25 @@ public class ModuleElectricity extends RailcraftModule {
         epsilon = EnumMachineEpsilon.ELECTRIC_FEEDER_ADMIN;
         epsilon.register();
 
+        epsilon = EnumMachineEpsilon.FORCE_TRACK_EMITTER;
+        if (epsilon.register())
+            CraftingPlugin.addShapedRecipe(epsilon.getItem(),
+                    "PCP",
+                    "CDC",
+                    "PCP",
+                    'P', RailcraftItem.plate.getRecipeObject(EnumPlate.TIN),
+                    'D', new ItemStack(Blocks.diamond_block),
+                    'C', "ingotCopper");
+
         epsilon = EnumMachineEpsilon.FLUX_TRANSFORMER;
-        epsilon.register();
+        if (epsilon.register())
+            CraftingPlugin.addShapedRecipe(epsilon.getItem(2),
+                    "PGP",
+                    "GRG",
+                    "PGP",
+                    'P', RailcraftItem.plate.getRecipeObject(EnumPlate.COPPER),
+                    'G', Items.gold_ingot,
+                    'R',  new ItemStack(Blocks.redstone_block));
 
         EnumMachineDelta delta = EnumMachineDelta.WIRE;
         if (delta.register())

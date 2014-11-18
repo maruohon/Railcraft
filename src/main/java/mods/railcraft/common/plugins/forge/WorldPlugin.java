@@ -9,8 +9,11 @@
 package mods.railcraft.common.plugins.forge;
 
 import mods.railcraft.api.core.WorldCoordinate;
+
 import static mods.railcraft.common.util.misc.MiscTools.*;
+
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -38,8 +41,22 @@ public class WorldPlugin {
         return world.getBlock(getXOnSide(x, side), getYOnSide(y, side), getZOnSide(z, side));
     }
 
+    public static boolean isBlockAt(World world, int x, int y, int z, Block block, int meta) {
+        if (getBlock(world, x, y, z) != block)
+            return false;
+        return meta == -1 || getBlockMetadata(world, x, y, z) == meta;
+    }
+
     public static boolean blockExists(World world, int x, int y, int z) {
         return world.blockExists(x, y, z);
+    }
+
+    public static boolean blockIsAir(World world, int x, int y, int z, Block block) {
+        return block.isAir(world, x, y, z);
+    }
+
+    public static boolean blockIsAir(World world, int x, int y, int z) {
+        return world.isAirBlock(x, y, z);
     }
 
     public static boolean blockExistsOnSide(World world, int x, int y, int z, ForgeDirection side) {
@@ -58,8 +75,8 @@ public class WorldPlugin {
         int sx = getXOnSide(x, side);
         int sy = getYOnSide(y, side);
         int sz = getZOnSide(z, side);
-        if (world.blockExists(sx, sy, sz))
-            return world.getTileEntity(sx, sy, sz);
+        if (blockExists(world, sx, sy, sz) && getBlock(world, sx, sy, sz) != Blocks.air)
+            return getBlockTile(world, sx, sy, sz);
         return null;
     }
 
@@ -80,6 +97,10 @@ public class WorldPlugin {
 
     public static boolean setBlock(World world, int x, int y, int z, Block block, int meta, int update) {
         return world.setBlock(x, y, z, block, meta, update);
+    }
+
+    public static boolean setBlockToAir(World world, int x, int y, int z) {
+        return world.setBlockToAir(x, y, z);
     }
 
     public static void notifyBlocksOfNeighborChange(World world, int x, int y, int z, Block block) {

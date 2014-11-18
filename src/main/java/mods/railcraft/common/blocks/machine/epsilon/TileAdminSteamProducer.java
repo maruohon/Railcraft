@@ -5,7 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import mods.railcraft.common.blocks.machine.IEnumMachine;
 import mods.railcraft.common.blocks.machine.TileMachineBase;
-import mods.railcraft.common.blocks.machine.epsilon.EnumMachineEpsilon;
 import mods.railcraft.common.fluids.FluidHelper;
 import mods.railcraft.common.fluids.Fluids;
 import mods.railcraft.common.plugins.forge.PowerPlugin;
@@ -27,6 +26,8 @@ public class TileAdminSteamProducer extends TileMachineBase implements IFluidHan
     @Override
     public void onNeighborBlockChange(Block block) {
         super.onNeighborBlockChange(block);
+        if (Game.isNotHost(getWorld()))
+            return;
         boolean p = PowerPlugin.isBlockBeingPowered(worldObj, xCoord, yCoord, zCoord);
         if (powered != p) {
             powered = p;
@@ -47,12 +48,13 @@ public class TileAdminSteamProducer extends TileMachineBase implements IFluidHan
             TileEntity tile = tileCache.getTileOnSide(side);
             if (tile instanceof IFluidHandler) {
                 IFluidHandler fluidHandler = (IFluidHandler) tile;
-                if (fluidHandler.canFill(side, Fluids.STEAM.get())) {
+                if (fluidHandler.canFill(side.getOpposite(), Fluids.STEAM.get())) {
                     FluidStack fluidStack = Fluids.STEAM.get(FluidHelper.BUCKET_VOLUME);
-                    fluidHandler.fill(side, fluidStack, true);
+                    fluidHandler.fill(side.getOpposite(), fluidStack, true);
                 }
             }
         }
+
     }
 
     @Override

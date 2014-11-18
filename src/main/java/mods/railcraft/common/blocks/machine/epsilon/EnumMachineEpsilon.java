@@ -37,6 +37,7 @@ public enum EnumMachineEpsilon implements IEnumMachine {
     ELECTRIC_FEEDER(Module.ELECTRICITY, "electric.feeder", TileElectricFeeder.class, 1, 1, 0),
     ELECTRIC_FEEDER_ADMIN(Module.ELECTRICITY, "electric.feeder.admin", TileElectricFeederAdmin.class, 2, 1, 0, 0, 0, 0, 0, 0, 1),
     ADMIN_STEAM_PRODUCER(Module.STEAM, "admin.steam.producer", TileAdminSteamProducer.class, 2, 1, 0, 0, 0, 0, 0, 0, 1),
+    FORCE_TRACK_EMITTER(Module.ELECTRICITY, "force.track.emitter", TileForceTrackEmitter.class),
     FLUX_TRANSFORMER(Module.ELECTRICITY, "flux.transformer", TileFluxTransformer.class);
     private final Module module;
     private final String tag;
@@ -50,8 +51,9 @@ public enum EnumMachineEpsilon implements IEnumMachine {
     static {
         creativeList.add(ELECTRIC_FEEDER);
         creativeList.add(ELECTRIC_FEEDER_ADMIN);
-        creativeList.add(ADMIN_STEAM_PRODUCER);
         creativeList.add(FLUX_TRANSFORMER);
+        creativeList.add(FORCE_TRACK_EMITTER);
+        creativeList.add(ADMIN_STEAM_PRODUCER);
     }
 
     private EnumMachineEpsilon(Module module, String tag, Class<? extends TileMachineBase> tile, int... textureInfo) {
@@ -102,7 +104,14 @@ public enum EnumMachineEpsilon implements IEnumMachine {
                 machine.texture[i] = icons[machine.textureInfo[i + 2]];
             }
         }
-        
+
+        IIcon emitterSide = iconRegister.registerIcon("railcraft:" + FORCE_TRACK_EMITTER.tag + ".side");
+        FORCE_TRACK_EMITTER.texture = new IIcon[9];
+        Arrays.fill(FORCE_TRACK_EMITTER.texture, emitterSide);
+        FORCE_TRACK_EMITTER.texture[6] = iconRegister.registerIcon("railcraft:" + FORCE_TRACK_EMITTER.tag + ".side.unpowered");
+        FORCE_TRACK_EMITTER.texture[7] = iconRegister.registerIcon("railcraft:" + FORCE_TRACK_EMITTER.tag + ".facing");
+        FORCE_TRACK_EMITTER.texture[8] = iconRegister.registerIcon("railcraft:" + FORCE_TRACK_EMITTER.tag + ".facing.unpowered");
+
         IIcon transformerSide = iconRegister.registerIcon("railcraft:" + FLUX_TRANSFORMER.tag + ".side");
         IIcon transformerCap = iconRegister.registerIcon("railcraft:" + FLUX_TRANSFORMER.tag + ".cap");
         FLUX_TRANSFORMER.texture = new IIcon[6];
