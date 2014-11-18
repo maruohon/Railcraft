@@ -158,14 +158,20 @@ public class ModuleEmblem extends RailcraftModule {
     public void postInit() {
         proxy.initClient();
 
-        ItemStack locomotive = EnumCart.LOCO_STEAM_SOLID.getCartItem();
-        if (locomotive != null) {
-            IRecipe recipe = new LocomotiveEmblemRecipe(locomotive);
-            CraftingPlugin.addRecipe(recipe);
-        }
+        addLocomotiveEmblemRecipe(EnumCart.LOCO_STEAM_SOLID);
+        addLocomotiveEmblemRecipe(EnumCart.LOCO_STEAM_MAGIC);
+        addLocomotiveEmblemRecipe(EnumCart.LOCO_ELECTRIC);
         if (BlockPost.block != null) {
             CraftingPlugin.addRecipe(new EmblemPostColorRecipe());
             CraftingPlugin.addRecipe(new EmblemPostEmblemRecipe());
+        }
+    }
+
+    private void addLocomotiveEmblemRecipe(EnumCart cart) {
+        ItemStack locomotive = cart.getCartItem();
+        if (locomotive != null) {
+            IRecipe recipe = new LocomotiveEmblemRecipe(locomotive);
+            CraftingPlugin.addRecipe(recipe);
         }
     }
 
