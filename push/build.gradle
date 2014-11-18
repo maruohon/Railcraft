@@ -69,21 +69,21 @@ task pushAPILatest ( type: CopyAsk, dependsOn: [rootProject.apiZip, pushQuery] )
     }
 }
 
-task pushNotesToDropbox ( type: CopySafe, dependsOn: [pushQuery] ) {
+task pushNotesToDropbox ( type: CopySafe ) {
     from(sourceSets.main.resources.srcDirs) {
         include 'change_log.txt'
     }
     into dirDropboxRailcraft
 }
 
-task pushNotesToPahiCraft ( type: CopySafe, dependsOn: [pushQuery] ) {
+task pushNotesToPahiCraft ( type: CopySafe) {
     from(sourceSets.main.resources.srcDirs) {
         include 'change_log.txt'
     }
     into dirDropboxPahiCraftNotes
 }
 
-task pushNotesToGoogle ( type: CopySafe, dependsOn: [pushQuery] ) {
+task pushNotesToGoogle ( type: CopySafe) {
     from(sourceSets.main.resources.srcDirs) {
         include 'change_log.txt'
     }
