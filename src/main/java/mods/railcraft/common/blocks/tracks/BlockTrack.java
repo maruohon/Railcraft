@@ -44,6 +44,7 @@ import mods.railcraft.common.blocks.RailcraftBlocks;
 import mods.railcraft.common.core.Railcraft;
 import mods.railcraft.common.items.ItemOveralls;
 import mods.railcraft.common.plugins.forge.PowerPlugin;
+import mods.railcraft.common.plugins.forge.WorldPlugin;
 import mods.railcraft.common.util.inventory.InvTools;
 import mods.railcraft.common.util.misc.Game;
 import mods.railcraft.common.util.misc.MiscTools;
@@ -81,11 +82,14 @@ public class BlockTrack extends BlockRailBase implements IPostConnection {
         Map<Short, TrackSpec> specs = TrackRegistry.getTrackSpecIDs();
 
         Set<TrackSpec> railcraftSpecs = new HashSet<TrackSpec>();
-        for (EnumTrack track : EnumTrack.getCreativeList()) {
+        for (EnumTrack track : EnumTrack.VALUES) {
             TrackSpec spec = track.getTrackSpec();
             railcraftSpecs.add(spec);
-            if (track.isEnabled() && !track.isHidden())
-                list.add(spec.getItem());
+        }
+
+        for (EnumTrack track : EnumTrack.getCreativeList()) {
+            if (track.isEnabled())
+                list.add(track.getItem());
         }
 
         Set<TrackSpec> otherSpecs = new HashSet<TrackSpec>(specs.values());
@@ -406,14 +410,20 @@ public class BlockTrack extends BlockRailBase implements IPostConnection {
     }
 
     @Override
-    public void onNeighborBlockChange(World world, int i, int j, int k, Block block) {
-        if (Game.isNotHost(world))
-            return;
-        TileEntity t = world.getTileEntity(i, j, k);
-        if (t instanceof TileTrack) {
-            TileTrack tile = (TileTrack) t;
-            tile.onNeighborBlockChange(block);
-            tile.getTrackInstance().onNeighborBlockChange(block);
+    public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
+        try {
+            if (Game.isNotHost(world))
+                return;
+            TileEntity t = WorldPlugin.getBlockTile(world, x, y, z);
+            if (t instanceof TileTrack) {
+                TileTrack tile = (TileTrack) t;
+                tile.onNeighborBlockChange(block);
+                tile.getTrackInstance().onNeighborBlockChange(block);
+            }
+        } catch (StackOverflowError error) {
+            Game.logThrowable(Level.ERROR, "Stack Overflow Error in BlockTrack.onNeighborBlockChange()", 10, error);
+            if (Game.IS_DEBUG)
+                throw error;
         }
     }
 
