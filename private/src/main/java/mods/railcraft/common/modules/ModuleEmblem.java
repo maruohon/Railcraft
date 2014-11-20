@@ -151,6 +151,7 @@ public class ModuleEmblem extends RailcraftModule {
 //        printCode("more nukes");
 //        printCode("mcmodcom");
 //        printCode("linear story");
+//        printCode("mysterydump");
 //        System.exit(0);
     }
 
