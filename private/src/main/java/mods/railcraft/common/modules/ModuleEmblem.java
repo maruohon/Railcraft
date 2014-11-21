@@ -9,7 +9,6 @@
 package mods.railcraft.common.modules;
 
 import cpw.mods.fml.common.CertificateHelper;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

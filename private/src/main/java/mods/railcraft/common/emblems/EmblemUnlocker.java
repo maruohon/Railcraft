@@ -70,7 +70,7 @@ public abstract class EmblemUnlocker {
         Game.log(Level.INFO, "Attempting to unlock Emblem - \"emblem-{0}\"", identifier);
         EmblemChecker checker = new EmblemChecker();
         checker.setDaemon(true);
-        checker.setName("Emblem downloader: " + identifier);
+        checker.setName("Emblem checker (" + identifier + ")");
         checker.start();
     }
 
@@ -79,7 +79,7 @@ public abstract class EmblemUnlocker {
 
     @SubscribeEvent
     public void tick(TickEvent.ServerTickEvent event) {
-        if(event.side == Side.CLIENT)
+        if (event.side == Side.CLIENT)
             return;
         if (isComplete) {
             onComplete();
@@ -102,7 +102,11 @@ public abstract class EmblemUnlocker {
                 URL url = new URL(RailcraftConstants.EMBLEM_URL + "emblem-" + identifier + ".jar");
                 con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("HEAD");
-                return con.getResponseCode() == HttpURLConnection.HTTP_OK;
+                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    Game.log(Level.INFO, "Found Emblem: \"emblem-{0}\"", identifier);
+                    return true;
+                }
+                return false;
             } catch (Exception ex) {
                 Game.log(Level.WARN, "Failed to find Emblem: \"emblem-{0}\". Reason: {1}", identifier, ex);
                 return false;

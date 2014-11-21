@@ -14,6 +14,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
 import mods.railcraft.common.util.inventory.InvTools;
+import mods.railcraft.common.util.inventory.wrappers.IInvSlot;
+import mods.railcraft.common.util.inventory.wrappers.InventoryIterator;
 
 /**
  *
@@ -25,6 +27,7 @@ public class LocomotiveEmblemRecipe implements IRecipe {
 
     public LocomotiveEmblemRecipe(ItemStack locomotive) {
         this.locomotive = locomotive;
+        InvTools.addNBTTag(locomotive, "gregfix", "get the hell off my lawn!");
     }
 
     private boolean isEmblem(ItemStack stack) {
@@ -43,7 +46,7 @@ public class LocomotiveEmblemRecipe implements IRecipe {
             ItemStack stack = craftingGrid.getStackInSlot(slot);
             if (stack == null)
                 continue;
-            else if (isLocomotive(stack))
+            if (isLocomotive(stack))
                 numLocomotive++;
             else if (isEmblem(stack))
                 numEmblem++;
@@ -58,11 +61,11 @@ public class LocomotiveEmblemRecipe implements IRecipe {
         ItemStack loco = null;
         ItemStack emblem = null;
 
-        for (int slot = 0; slot < craftingGrid.getSizeInventory(); slot++) {
-            ItemStack stack = craftingGrid.getStackInSlot(slot);
+        for (IInvSlot slot : InventoryIterator.getIterable(craftingGrid)) {
+            ItemStack stack = slot.getStackInSlot();
             if (stack == null)
                 continue;
-            else if (isLocomotive(stack))
+            if (isLocomotive(stack))
                 loco = stack;
             else if (isEmblem(stack))
                 emblem = stack;
@@ -70,7 +73,7 @@ public class LocomotiveEmblemRecipe implements IRecipe {
                 return null;
         }
 
-        if (loco == null)
+        if (loco == null || emblem == null)
             return null;
 
         ItemStack result = loco.copy();

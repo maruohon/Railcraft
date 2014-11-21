@@ -14,6 +14,7 @@ import java.util.*;
 import mods.railcraft.common.core.RailcraftConstants;
 import mods.railcraft.common.plugins.forge.NBTPlugin;
 import mods.railcraft.common.plugins.forge.NBTPlugin.NBTList;
+import mods.railcraft.common.util.misc.Game;
 import mods.railcraft.common.util.network.PacketBuilder;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -22,6 +23,7 @@ import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.logging.log4j.Level;
 
 /**
  *
@@ -105,10 +107,13 @@ public class EmblemManager implements IEmblemManager {
 
     static void unlockEmblem(EntityPlayerMP player, String emblemCode) {
         String identifier = getIdentifierFromCode(emblemCode);
-        if (getUnlockedEmblems(player).contains(identifier))
+        if (getUnlockedEmblems(player).contains(identifier)) {
+            Game.log(Level.WARN, "Tried to unlock already unlocked Emblem, aborting - \"emblem-{0}\"", identifier);
             return;
+        }
         NBTList<NBTTagByteArray> unlocks = getEmblemUnlockData(player);
         unlocks.add(new NBTTagByteArray(scrambleIdentifier(identifier)));
+        Game.log(Level.WARN, "Emblem unlocked - \"emblem-{0}\"", identifier);
     }
 
     @Override

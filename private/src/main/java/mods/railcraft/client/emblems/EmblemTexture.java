@@ -52,7 +52,7 @@ public class EmblemTexture extends Texture {
             Game.log(Level.INFO, "Attempting to download Emblem - \"emblem-{0}\"", identifier);
             EmblemDownloader downloader = new EmblemDownloader();
             downloader.setDaemon(true);
-            downloader.setName("Emblem downloader: " + identifier);
+            downloader.setName("Emblem downloader (" + identifier + ")");
             downloader.start();
         }
     }
@@ -84,6 +84,7 @@ public class EmblemTexture extends Texture {
                 ReadableByteChannel rbc = Channels.newChannel(url.openStream());
                 fos = new FileOutputStream(EmblemPackageManager.instance.getEmblemFile(identifier));
                 fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+                Game.log(Level.INFO, "Downloaded Emblem: \"emblem-{0}\"", identifier);
                 EmblemPackageManager.instance.loadEmblem(identifier);
                 loadEmblemTexture();
             } catch (Exception ex) {
