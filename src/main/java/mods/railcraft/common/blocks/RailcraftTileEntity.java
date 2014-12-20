@@ -28,6 +28,7 @@ import mods.railcraft.common.util.network.PacketTileEntity;
 import mods.railcraft.common.util.network.RailcraftPacket;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.ItemStack;
 
 public abstract class RailcraftTileEntity extends TileEntity implements INetworkedObject, IOwnable {
 
@@ -86,7 +87,7 @@ public abstract class RailcraftTileEntity extends TileEntity implements INetwork
             PacketBuilder.instance().sendTileEntityPacket(this);
     }
 
-    public void onBlockPlacedBy(EntityLivingBase entityliving) {
+    public void onBlockPlacedBy(EntityLivingBase entityliving, ItemStack stack) {
         if (entityliving instanceof EntityPlayer)
             owner = ((EntityPlayer) entityliving).getGameProfile();
     }
@@ -125,6 +126,8 @@ public abstract class RailcraftTileEntity extends TileEntity implements INetwork
     public abstract String getName();
 
     public static boolean isUseableByPlayerHelper(TileEntity tile, EntityPlayer player) {
+        if(tile.isInvalid())
+            return false;
         if (tile.getWorldObj().getTileEntity(tile.xCoord, tile.yCoord, tile.zCoord) != tile)
             return false;
         return player.getDistanceSq(tile.xCoord, tile.yCoord, tile.zCoord) <= 64;
