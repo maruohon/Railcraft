@@ -8,19 +8,17 @@
  */
 package mods.railcraft.common.carts;
 
-import com.google.common.collect.MapMaker;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-import org.apache.logging.log4j.Level;
-import net.minecraft.entity.item.EntityMinecart;
 import mods.railcraft.api.carts.CartTools;
 import mods.railcraft.api.carts.ILinkableCart;
 import mods.railcraft.api.carts.ILinkageManager;
 import mods.railcraft.common.core.RailcraftConfig;
 import mods.railcraft.common.util.misc.Game;
+import net.minecraft.entity.item.EntityMinecart;
+import org.apache.logging.log4j.Level;
+import com.google.common.collect.MapMaker;
 
 /**
  * The LinkageManager contains all the functions needed to link and interacted
@@ -287,13 +285,22 @@ public class LinkageManager implements ILinkageManager {
         return train;
     }
 
+    public Train getTrain(UUID cartUUID) {
+        if (cartUUID == null)
+            return null;
+        EntityMinecart cart = getCartFromUUID(cartUUID);
+        if(cart == null)
+            return null;
+        return getTrain(cart);
+    }
+
     public UUID getTrainUUID(EntityMinecart cart) {
         long high = cart.getEntityData().getLong(TRAIN_HIGH);
         long low = cart.getEntityData().getLong(TRAIN_LOW);
         return new UUID(high, low);
     }
 
-    private void resetTrain(EntityMinecart cart) {
+    public void resetTrain(EntityMinecart cart) {
         Train train = trains.remove(getTrainUUID(cart));
         if (train != null)
             train.releaseTrain();

@@ -10,8 +10,11 @@ package mods.railcraft.common.blocks.machine.beta;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import mods.railcraft.common.blocks.machine.IComparatorValueProvider;
 import mods.railcraft.common.blocks.machine.IEnumMachine;
+import mods.railcraft.common.blocks.machine.TileMultiBlock;
 import mods.railcraft.common.fluids.FluidHelper;
 import mods.railcraft.common.fluids.TankManager;
 import mods.railcraft.common.fluids.tanks.FakeTank;
@@ -28,7 +31,7 @@ import net.minecraftforge.fluids.IFluidHandler;
  *
  * @author CovertJaguar <http://www.railcraft.info>
  */
-public class TileTankIronValve extends TileTankBase implements IFluidHandler {
+public class TileTankIronValve extends TileTankBase implements IFluidHandler, IComparatorValueProvider {
 
     private final static ITileFilter FLUID_OUTPUT_FILTER = new ITileFilter() {
         @Override
@@ -45,6 +48,8 @@ public class TileTankIronValve extends TileTankBase implements IFluidHandler {
     private static final int FLOW_RATE = FluidHelper.BUCKET_VOLUME;
     private static final byte FILL_INCREMENT = 1;
     private final StandardTank fillTank = new StandardTank(20);
+
+    private boolean previousStructureValidity;
 
     public TileTankIronValve() {
         tankManager.add(fillTank);
@@ -129,7 +134,20 @@ public class TileTankIronValve extends TileTankBase implements IFluidHandler {
             if (tMan != null)
                 tMan.outputLiquid(tileCache, FLUID_OUTPUT_FILTER, FLUID_OUTPUTS, 0, FLOW_RATE);
         }
+
+        TileMultiBlock masterBlock = getMasterBlock();
+        if (masterBlock != null && masterBlock instanceof TileTankBase) {
+            TileTankBase masterTileTankBase = (TileTankBase) masterBlock;
+            if (masterTileTankBase.comparatorValueChanged())
+                notifyBlocksOfNeighborChange();
+        }
+
+        if (previousStructureValidity != isStructureValid())
+            notifyBlocksOfNeighborChange();
+        previousStructureValidity = isStructureValid();
     }
+
+
 
     @Override
     public IIcon getIcon(int side) {
@@ -200,6 +218,14 @@ public class TileTankIronValve extends TileTankBase implements IFluidHandler {
         if (tMan != null)
             return tMan.getTankInfo();
         return FakeTank.INFO;
+    }
+
+    @Override
+    public int getComparatorInputOverride(World world, int x, int y, int z, int side) {
+        TileMultiBlock masterBlock = getMasterBlock();
+        if (masterBlock != null && masterBlock instanceof TileTankBase)
+            return ((TileTankBase) masterBlock).getComparatorValue();
+        return 0;
     }
 
 }

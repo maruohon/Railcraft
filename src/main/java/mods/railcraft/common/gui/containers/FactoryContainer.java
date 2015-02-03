@@ -15,7 +15,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import mods.railcraft.common.blocks.machine.ITankTile;
 import mods.railcraft.common.blocks.machine.TileMultiBlock;
 import mods.railcraft.common.blocks.machine.alpha.*;
-import mods.railcraft.common.blocks.machine.beta.TileBoilerFireboxLiquid;
+import mods.railcraft.common.blocks.machine.beta.TileBoilerFireboxFluid;
 import mods.railcraft.common.blocks.machine.beta.TileBoilerFireboxSolid;
 import mods.railcraft.common.blocks.machine.beta.TileEngineSteam;
 import mods.railcraft.common.blocks.machine.beta.TileEngineSteamHobby;
@@ -47,10 +47,10 @@ public class FactoryContainer {
             switch (gui) {
                 case LOADER_ITEM:
                     return new ContainerItemLoader(inv, (TileLoaderItemBase) obj);
-                case LOADER_LIQUID:
-                    return new ContainerLiquidLoader(inv, (TileLiquidLoader) obj);
-                case UNLOADER_LIQUID:
-                    return new ContainerLiquidUnloader(inv, (TileLiquidUnloader) obj);
+                case LOADER_FLUID:
+                    return new ContainerFluidLoader(inv, (TileFluidLoader) obj);
+                case UNLOADER_FLUID:
+                    return new ContainerFluidUnloader(inv, (TileFluidUnloader) obj);
                 case LOADER_ENERGY:
                     return new ContainerEnergyLoader(inv, (TileEnergyLoader) obj);
                 case UNLOADER_ENERGY:
@@ -96,7 +96,7 @@ public class FactoryContainer {
                 case BOILER_SOLID:
                     return new ContainerBoilerSolid(inv, (TileBoilerFireboxSolid) obj);
                 case BOILER_LIQUID:
-                    return new ContainerBoilerLiquid(inv, (TileBoilerFireboxLiquid) obj);
+                    return new ContainerBoilerFluid(inv, (TileBoilerFireboxFluid) obj);
                 case TURBINE:
                     return new ContainerTurbine(inv, (TileSteamTurbine) obj);
                 case ANVIL:
@@ -118,9 +118,9 @@ public class FactoryContainer {
                 case CART_UNDERCUTTER:
                     return new ContainerUndercutter(inv, (EntityCartUndercutter) obj);
                 case LOCO_STEAM:
-                    return new ContainerLocomotiveSteamSolid(inv, (EntityLocomotiveSteamSolid) obj);
+                    return ContainerLocomotiveSteamSolid.make(inv, (EntityLocomotiveSteamSolid) obj);
                 case LOCO_ELECTRIC:
-                    return new ContainerLocomotiveElectric(inv, (EntityLocomotiveElectric) obj);
+                    return ContainerLocomotiveElectric.make(inv, (EntityLocomotiveElectric) obj);
                 case SWITCH_MOTOR:
                     return new ContainerAspectAction(inv.player, (IAspectActionManager) obj);
                 case BOX_RECEIVER:

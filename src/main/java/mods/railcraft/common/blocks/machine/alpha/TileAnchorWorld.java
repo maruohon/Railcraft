@@ -66,6 +66,7 @@ public class TileAnchorWorld extends TileMachineItem implements IAnchor, ISidedI
     private int xSentinel = -1;
     private int ySentinel = -1;
     private int zSentinel = -1;
+    private int prevX, prevY, prevZ;
     protected Ticket ticket;
     private Set<ChunkCoordIntPair> chunks;
     private long fuel;
@@ -248,6 +249,13 @@ public class TileAnchorWorld extends TileMachineItem implements IAnchor, ISidedI
             return;
         }
 
+        if (xCoord != prevX || yCoord != prevY || zCoord != prevZ) {
+            releaseTicket();
+            prevX = xCoord;
+            prevY = yCoord;
+            prevZ = zCoord;
+        }
+
         if (ticket != null)
             if (refreshTicket || powered)
                 releaseTicket();
@@ -347,7 +355,12 @@ public class TileAnchorWorld extends TileMachineItem implements IAnchor, ISidedI
     public void setTicket(Ticket ticket) {
         boolean changed = false;
         if (this.ticket != ticket) {
-            ForgeChunkManager.releaseTicket(this.ticket);
+            if (this.ticket != null) {
+                for (ChunkCoordIntPair chunk : this.ticket.getChunkList()) {
+                    ForgeChunkManager.unforceChunk(this.ticket, chunk);
+                }
+                ForgeChunkManager.releaseTicket(this.ticket);
+            }
             changed = true;
         }
         this.ticket = ticket;
@@ -433,6 +446,10 @@ public class TileAnchorWorld extends TileMachineItem implements IAnchor, ISidedI
         data.setInteger("xSentinel", xSentinel);
         data.setInteger("ySentinel", ySentinel);
         data.setInteger("zSentinel", zSentinel);
+
+        data.setInteger("prevX", prevX);
+        data.setInteger("prevY", prevY);
+        data.setInteger("prevZ", prevZ);
     }
 
     @Override
@@ -447,6 +464,10 @@ public class TileAnchorWorld extends TileMachineItem implements IAnchor, ISidedI
         xSentinel = data.getInteger("xSentinel");
         ySentinel = data.getInteger("ySentinel");
         zSentinel = data.getInteger("zSentinel");
+
+        prevX = data.getInteger("prevX");
+        prevY = data.getInteger("prevY");
+        prevZ = data.getInteger("prevZ");
     }
 
     @Override

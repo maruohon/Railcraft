@@ -59,7 +59,7 @@ public abstract class TileBoiler extends TileMultiBlock implements IFluidHandler
 
     static {
         fireboxBlocks.add(EnumMachineBeta.BOILER_FIREBOX_SOLID.ordinal());
-        fireboxBlocks.add(EnumMachineBeta.BOILER_FIREBOX_LIQUID.ordinal());
+        fireboxBlocks.add(EnumMachineBeta.BOILER_FIREBOX_FLUID.ordinal());
 
         boilerBlocks.addAll(fireboxBlocks);
         boilerBlocks.add(EnumMachineBeta.BOILER_TANK_LOW_PRESSURE.ordinal());
@@ -293,6 +293,7 @@ public abstract class TileBoiler extends TileMultiBlock implements IFluidHandler
 
     @Override
     public boolean canDrain(ForgeDirection from, Fluid fluid) {
+        if(fluid == null) return true;
         return Fluids.STEAM.is(fluid);
     }
 
