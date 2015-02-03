@@ -11,7 +11,7 @@ package mods.railcraft.common.emblems;
 import java.util.List;
 import mods.railcraft.common.core.RailcraftConfig;
 import mods.railcraft.common.plugins.forge.CreativePlugin;
-import mods.railcraft.common.plugins.forge.ItemRegistry;
+import mods.railcraft.common.plugins.forge.RailcraftRegistry;
 import mods.railcraft.common.util.inventory.InvTools;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,7 +35,7 @@ public class ItemEmblemDesign extends ItemEmblemBase {
                 item = new ItemEmblemDesign();
                 item.setUnlocalizedName(tag);
 
-                ItemRegistry.registerItemStack(tag, new ItemStack(item));
+                RailcraftRegistry.register(tag, new ItemStack(item));
             }
         }
     }

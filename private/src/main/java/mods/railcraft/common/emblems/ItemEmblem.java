@@ -9,8 +9,7 @@
 package mods.railcraft.common.emblems;
 
 import mods.railcraft.common.core.RailcraftConfig;
-import mods.railcraft.common.plugins.forge.LocalizationPlugin;
-import mods.railcraft.common.plugins.forge.ItemRegistry;
+import mods.railcraft.common.plugins.forge.RailcraftRegistry;
 import mods.railcraft.common.util.inventory.InvTools;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
@@ -30,9 +29,9 @@ public class ItemEmblem extends ItemEmblemBase {
             if (RailcraftConfig.isItemEnabled(tag)) {
                 item = new ItemEmblem();
                 item.setUnlocalizedName(tag);
-                ItemRegistry.registerItem(item);
+                RailcraftRegistry.register(item);
 
-                ItemRegistry.registerItemStack(tag, new ItemStack(item));
+                RailcraftRegistry.register(tag, new ItemStack(item));
             }
         }
     }
