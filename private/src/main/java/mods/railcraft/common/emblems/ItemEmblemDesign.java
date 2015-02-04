@@ -35,7 +35,7 @@ public class ItemEmblemDesign extends ItemEmblemBase {
                 item = new ItemEmblemDesign();
                 item.setUnlocalizedName(tag);
 
-                RailcraftRegistry.register(tag, new ItemStack(item));
+                RailcraftRegistry.register(item);
             }
         }
     }

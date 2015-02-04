@@ -30,8 +30,6 @@ public class ItemEmblem extends ItemEmblemBase {
                 item = new ItemEmblem();
                 item.setUnlocalizedName(tag);
                 RailcraftRegistry.register(item);
-
-                RailcraftRegistry.register(tag, new ItemStack(item));
             }
         }
     }
