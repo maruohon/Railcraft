@@ -38,7 +38,7 @@ public class EmblemPostEmblemRecipe implements IRecipe {
 
     public ItemStack getPost() {
         if (postTemplate == null)
-            postTemplate = EnumPost.METAL.getItem();
+            postTemplate = EnumPost.METAL_UNPAINTED.getItem();
         return postTemplate;
     }
 

@@ -44,7 +44,7 @@ public class EmblemRecipesPlugin implements RecipeProvider {
                 ItemStack[] stacks = new ItemStack[10];
                 stacks[0] = EnumPost.EMBLEM.getItem();
                 ItemPost.setEmblem(stacks[0], EmblemManager.getIdentifierFromCode("Stone Age Miner"));
-                stacks[1] = EnumPost.METAL.getItem();
+                stacks[1] = EnumPost.METAL_UNPAINTED.getItem();
                 stacks[2] = ItemEmblem.getEmblem(EmblemManager.getIdentifierFromCode("Stone Age Miner"));
                 generator.addRecipe(template, stacks);
             }
