@@ -13,9 +13,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-import mods.railcraft.api.crafting.RailcraftCraftingManager;
 import mods.railcraft.common.blocks.RailcraftBlocks;
-import mods.railcraft.common.blocks.aesthetics.brick.BlockBrick;
 import mods.railcraft.common.blocks.aesthetics.cube.BlockCube;
 import mods.railcraft.common.blocks.aesthetics.cube.EnumCube;
 import mods.railcraft.common.blocks.aesthetics.glass.BlockStrengthGlass;
@@ -86,7 +84,7 @@ public class ModuleStructures extends RailcraftModule {
                             " S ",
                             "SIS",
                             " S ",
-                            'I', Items.iron_ingot,
+                            'I', "ingotIron",
                             'S', Blocks.stone);
                 }
             }
@@ -113,7 +111,7 @@ public class ModuleStructures extends RailcraftModule {
                     "RCR",
                     'N', new ItemStack(Blocks.netherrack),
                     'C', new ItemStack(Items.cauldron),
-                    'R', new ItemStack(Items.redstone));
+                    'R', "dustRedstone");
         }
 
 //        cubeType = EnumCube.BANDED_PLANKS;
@@ -167,31 +165,36 @@ public class ModuleStructures extends RailcraftModule {
                     'T', BlockRailcraftSlab.getItem(EnumBlockMaterial.CONCRETE),
                     'I', EnumPost.STONE.getItem());
 
-            ItemStack stack = EnumPost.METAL.getItem(16);
-            RailcraftCraftingManager.rollingMachine.addRecipe(stack,
-                    "III",
-                    " I ",
-                    "III",
-                    'I', Items.iron_ingot);
-            RailcraftCraftingManager.rollingMachine.addRecipe(stack,
-                    "I I",
-                    "III",
-                    "I I",
-                    'I', Items.iron_ingot);
+            ItemStack stack = EnumPost.METAL_UNPAINTED.getItem(16);
 
-            CraftingPlugin.addShapedRecipe(EnumPost.METAL_PLATFORM.getItem(4),
-                    " T ",
-                    " I ",
-                    'T', BlockRailcraftSlab.getItem(EnumBlockMaterial.IRON),
-                    'I', EnumPost.METAL.getItem());
-
-            stack = EnumPost.METAL.getItem(32);
             IRecipe recipe = new ShapedOreRecipe(stack,
                     "III",
                     " I ",
                     "III",
+                    'I', "ingotIron");
+            RollingMachineCraftingManager.getInstance().getRecipeList().add(recipe);
+
+            recipe = new ShapedOreRecipe(stack,
+                    "I I",
+                    "III",
+                    "I I",
+                    'I', "ingotIron");
+            RollingMachineCraftingManager.getInstance().getRecipeList().add(recipe);
+
+            CraftingPlugin.addShapedRecipe(EnumPost.METAL_UNPAINTED_PLATFORM.getItem(4),
+                    " T ",
+                    " I ",
+                    'T', BlockRailcraftSlab.getItem(EnumBlockMaterial.IRON),
+                    'I', EnumPost.METAL_UNPAINTED.getItem());
+
+            stack = EnumPost.METAL_UNPAINTED.getItem(32);
+            recipe = new ShapedOreRecipe(stack,
+                    "III",
+                    " I ",
+                    "III",
                     'I', "ingotSteel");
             RollingMachineCraftingManager.getInstance().getRecipeList().add(recipe);
+
             recipe = new ShapedOreRecipe(stack,
                     "I I",
                     "III",
@@ -199,7 +202,7 @@ public class ModuleStructures extends RailcraftModule {
                     'I', "ingotSteel");
             RollingMachineCraftingManager.getInstance().getRecipeList().add(recipe);
 
-            stack = EnumPost.METAL.getItem(12);
+            stack = EnumPost.METAL_UNPAINTED.getItem(12);
             recipe = new ShapedOreRecipe(stack,
                     "III",
                     " I ",
@@ -213,7 +216,7 @@ public class ModuleStructures extends RailcraftModule {
                     'I', "ingotBronze");
             RollingMachineCraftingManager.getInstance().getRecipeList().add(recipe);
 
-            stack = EnumPost.METAL.getItem(20);
+            stack = EnumPost.METAL_UNPAINTED.getItem(20);
             recipe = new ShapedOreRecipe(stack,
                     "III",
                     " I ",
@@ -230,7 +233,7 @@ public class ModuleStructures extends RailcraftModule {
 
         if (blockPost != null && BlockPostMetal.post != null) {
             ItemStack stackColored = BlockPostMetal.post.getItem(1, OreDictionary.WILDCARD_VALUE);
-            ItemStack stackRaw = EnumPost.METAL.getItem();
+            ItemStack stackRaw = EnumPost.METAL_UNPAINTED.getItem();
 
             for (EnumColor color : EnumColor.values()) {
                 ItemStack outputStack = new ItemStack(BlockPostMetal.post, 8, color.ordinal());
@@ -251,7 +254,7 @@ public class ModuleStructures extends RailcraftModule {
 
         if (BlockPostMetal.post != null && BlockPostMetal.platform != null) {
             ItemStack stackColored = BlockPostMetal.platform.getItem(1, OreDictionary.WILDCARD_VALUE);
-            ItemStack stackRaw = EnumPost.METAL_PLATFORM.getItem();
+            ItemStack stackRaw = EnumPost.METAL_UNPAINTED_PLATFORM.getItem();
 
             for (EnumColor color : EnumColor.values()) {
                 ItemStack outputStack = new ItemStack(BlockPostMetal.platform, 8, color.ordinal());
@@ -282,7 +285,7 @@ public class ModuleStructures extends RailcraftModule {
                             "GFG",
                             "GSG",
                             "GWG",
-                            'G', new ItemStack(Blocks.glass),
+                            'G', "blockGlassColorless",
                             'F', frame,
                             'S', "dustSaltpeter",
                             'W', container);

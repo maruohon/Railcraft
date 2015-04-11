@@ -75,7 +75,7 @@ public class RoutingLogic {
     }
 
     private boolean canRouteCart(EntityMinecart cart) {
-        Train train = LinkageManager.instance().getTrain(cart);
+        Train train = Train.getTrain(cart);
         if (train == null)
             return false;
         if (train.size() == 1)
@@ -267,7 +267,7 @@ public class RoutingLogic {
 
         @Override
         public boolean matches(IRoutingTile tile, EntityMinecart cart) {
-            return value.equals(CartTools.getCartOwner(cart).getName());
+            return value.equalsIgnoreCase(CartTools.getCartOwner(cart).getName());
         }
 
     }
@@ -342,8 +342,8 @@ public class RoutingLogic {
 
         @Override
         public boolean matches(IRoutingTile tile, EntityMinecart cart) {
-            for (EntityMinecart c : LinkageManager.instance().getCartsInTrain(cart)) {
-                if (c.riddenByEntity != null && c.riddenByEntity instanceof EntityPlayer)
+            for (EntityMinecart c : Train.getTrain(cart)) {
+                if (c != null && c.riddenByEntity instanceof EntityPlayer)
                     return ridden;
             }
             return !ridden;
@@ -359,9 +359,9 @@ public class RoutingLogic {
 
         @Override
         public boolean matches(IRoutingTile tile, EntityMinecart cart) {
-            for (EntityMinecart c : LinkageManager.instance().getCartsInTrain(cart)) {
-                if (c.riddenByEntity != null && c.riddenByEntity instanceof EntityPlayer)
-                    return c.riddenByEntity.getCommandSenderName().equals(value);
+            for (EntityMinecart c : Train.getTrain(cart)) {
+                if (c != null && c.riddenByEntity instanceof EntityPlayer)
+                    return c.riddenByEntity.getCommandSenderName().equalsIgnoreCase(value);
             }
             return false;
         }
@@ -391,14 +391,14 @@ public class RoutingLogic {
         public ColorCondition(String line) throws RoutingLogicException {
             super("Color", false, line);
             String[] colors = value.split(",");
-            if (colors[0].equals("Any"))
+            if (colors[0].equals("Any") || colors[0].equals("*"))
                 primary = null;
             else {
                 primary = EnumColor.fromName(colors[0]);
                 if (primary == null)
                     throw new RoutingLogicException("railcraft.gui.routing.logic.unrecognized.keyword", colors[0]);
             }
-            if (colors.length == 1 || colors[1].equals("Any"))
+            if (colors.length == 1 || colors[1].equals("Any") || colors[1].equals("*"))
                 secondary = null;
             else {
                 secondary = EnumColor.fromName(colors[1]);
