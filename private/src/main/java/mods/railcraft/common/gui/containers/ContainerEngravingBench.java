@@ -1,22 +1,21 @@
 package mods.railcraft.common.gui.containers;
 
 import cofh.api.energy.EnergyStorage;
-import mods.railcraft.common.blocks.machine.alpha.TileEngravingBench;
-import mods.railcraft.common.gui.widgets.EmblemBankWidget;
-import net.minecraft.inventory.ICrafting;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
-import mods.railcraft.common.gui.widgets.IndicatorWidget;
+import mods.railcraft.common.blocks.machine.epsilon.TileEngravingBench;
 import mods.railcraft.common.gui.slots.SlotOutput;
 import mods.railcraft.common.gui.slots.SlotPassThrough;
+import mods.railcraft.common.gui.widgets.EmblemBankWidget;
+import mods.railcraft.common.gui.widgets.IndicatorWidget;
 import mods.railcraft.common.gui.widgets.RFEnergyIndicator;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.ICrafting;
+import net.minecraft.inventory.Slot;
 
 public class ContainerEngravingBench extends RailcraftContainer {
-
     private final TileEngravingBench tile;
-    private int lastEnergy, lastProgress;
-    public EmblemBankWidget emblemBank;
     private final RFEnergyIndicator energyIndicator;
+    public EmblemBankWidget emblemBank;
+    private int lastEnergy, lastProgress;
 
     public ContainerEngravingBench(final InventoryPlayer inventoryplayer, final TileEngravingBench tile) {
         super(tile);
@@ -82,5 +81,4 @@ public class ContainerEngravingBench extends RailcraftContainer {
                 break;
         }
     }
-
 }

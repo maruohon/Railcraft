@@ -1,26 +1,24 @@
 package mods.railcraft.client.gui;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import mods.railcraft.client.gui.GuiTools;
-import mods.railcraft.client.gui.TileGui;
 import mods.railcraft.client.gui.buttons.GuiBetterButton;
 import mods.railcraft.client.gui.buttons.GuiButtonSmall;
-import mods.railcraft.common.blocks.machine.alpha.TileEngravingBench;
-import mods.railcraft.common.blocks.machine.alpha.TileEngravingBench.GuiPacketType;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.util.StatCollector;
+import mods.railcraft.common.blocks.machine.epsilon.TileEngravingBench;
+import mods.railcraft.common.blocks.machine.epsilon.TileEngravingBench.GuiPacketType;
 import mods.railcraft.common.core.RailcraftConstants;
-import mods.railcraft.common.plugins.forge.LocalizationPlugin;
 import mods.railcraft.common.gui.buttons.StandardButtonTextureSets;
 import mods.railcraft.common.gui.containers.ContainerEngravingBench;
+import mods.railcraft.common.plugins.forge.LocalizationPlugin;
 import mods.railcraft.common.util.network.PacketBuilder;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.util.StatCollector;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 public class GuiEngravingBench extends TileGui {
-
     private final TileEngravingBench tile;
     private final EntityPlayer player;
 
@@ -99,5 +97,4 @@ public class GuiEngravingBench extends TileGui {
             drawTexturedModalRect(x + 76, y + 76, 176, 0, progress + 1, 12);
         }
     }
-
 }

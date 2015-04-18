@@ -1,20 +1,10 @@
 package mods.railcraft.client.gui;
 
-import java.awt.Desktop;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import mods.railcraft.client.gui.GuiTools;
-import mods.railcraft.client.gui.TileGui;
 import mods.railcraft.client.gui.buttons.GuiButtonSmall;
-import mods.railcraft.common.blocks.machine.alpha.TileEngravingBench;
+import mods.railcraft.common.blocks.machine.epsilon.TileEngravingBench;
 import mods.railcraft.common.core.RailcraftConstants;
-import mods.railcraft.common.plugins.forge.LocalizationPlugin;
 import mods.railcraft.common.gui.containers.ContainerEngravingBenchUnlock;
+import mods.railcraft.common.plugins.forge.LocalizationPlugin;
 import mods.railcraft.common.util.network.PacketBuilder;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,8 +14,16 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Keyboard;
 
-public class GuiEngravingBenchUnlock extends TileGui {
+import java.awt.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
+public class GuiEngravingBenchUnlock extends TileGui {
     private static final String URL_BLOG = "http://railcraft.info/";
     private static final String URL_TWITTER = "https://twitter.com/CovertJaguar";
     private static final String URL_YOUTUBE = "https://www.youtube.com/user/CovertJaguar";
@@ -165,5 +163,4 @@ public class GuiEngravingBenchUnlock extends TileGui {
         super.updateScreen();
         updateCount++;
     }
-
 }

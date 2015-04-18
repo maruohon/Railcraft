@@ -12,13 +12,11 @@ import cpw.mods.fml.common.CertificateHelper;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import java.security.cert.Certificate;
 import mods.railcraft.client.gui.GuiEngravingBench;
 import mods.railcraft.client.gui.GuiEngravingBenchUnlock;
 import mods.railcraft.common.blocks.aesthetics.post.BlockPost;
-import org.apache.logging.log4j.Level;
-import mods.railcraft.common.blocks.machine.alpha.EnumMachineAlpha;
-import mods.railcraft.common.blocks.machine.alpha.TileEngravingBench;
+import mods.railcraft.common.blocks.machine.epsilon.EnumMachineEpsilon;
+import mods.railcraft.common.blocks.machine.epsilon.TileEngravingBench;
 import mods.railcraft.common.carts.EnumCart;
 import mods.railcraft.common.emblems.*;
 import mods.railcraft.common.gui.EnumGui;
@@ -37,13 +35,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.RecipeSorter;
+import org.apache.logging.log4j.Level;
+
+import java.security.cert.Certificate;
 
 /**
- *
  * @author CovertJaguar <http://www.railcraft.info/>
  */
 public class ModuleEmblem extends RailcraftModule {
-
     @SidedProxy(clientSide = "mods.railcraft.client.emblems.ClientEmblemProxy", serverSide = "mods.railcraft.common.emblems.EmblemProxy")
     public static EmblemProxy proxy;
 
@@ -74,11 +73,9 @@ public class ModuleEmblem extends RailcraftModule {
     public void initFirst() {
         ItemEmblem.registerItem();
 
-        EnumMachineAlpha alpha = EnumMachineAlpha.ENGRAVING_BENCH;
-        if (alpha.register()) {
-            ItemStack stack = alpha.getItem();
-
-            CraftingPlugin.addShapedRecipe(stack,
+        EnumMachineEpsilon epsilon = EnumMachineEpsilon.ENGRAVING_BENCH;
+        if (epsilon.register()) {
+            CraftingPlugin.addShapedRecipe(epsilon.getItem(),
                     "TPB",
                     "PCP",
                     "VPV",
@@ -202,5 +199,4 @@ public class ModuleEmblem extends RailcraftModule {
         }
         return null;
     }
-
 }

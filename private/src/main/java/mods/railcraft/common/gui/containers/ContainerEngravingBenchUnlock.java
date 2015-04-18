@@ -1,16 +1,14 @@
 package mods.railcraft.common.gui.containers;
 
-import mods.railcraft.common.blocks.machine.alpha.TileEngravingBench;
-import mods.railcraft.common.gui.containers.RailcraftContainer;
+import mods.railcraft.common.blocks.machine.epsilon.TileEngravingBench;
 import mods.railcraft.common.gui.widgets.EmblemSlotWidget;
 import net.minecraft.entity.player.InventoryPlayer;
 
 public class ContainerEngravingBenchUnlock extends RailcraftContainer {
-
+    public final EmblemSlotWidget emblemSlot;
     private final TileEngravingBench tile;
     public String unlockResult;
     public String unlockMsg;
-    public final EmblemSlotWidget emblemSlot;
 
     public ContainerEngravingBenchUnlock(final InventoryPlayer inventoryplayer, final TileEngravingBench tile) {
         super(tile);
@@ -32,5 +30,4 @@ public class ContainerEngravingBenchUnlock extends RailcraftContainer {
             unlockMsg = data;
         }
     }
-
 }
