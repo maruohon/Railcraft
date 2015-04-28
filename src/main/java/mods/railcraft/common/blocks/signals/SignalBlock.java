@@ -17,7 +17,10 @@ import mods.railcraft.common.blocks.RailcraftTileEntity;
 import mods.railcraft.common.blocks.tracks.TrackTools;
 import mods.railcraft.common.core.RailcraftConfig;
 import mods.railcraft.common.util.misc.Game;
+import mods.railcraft.common.util.misc.MiscTools;
 import net.minecraft.entity.item.EntityMinecart;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -29,11 +32,13 @@ import java.util.*;
  * @author CovertJaguar <http://www.railcraft.info>
  */
 public abstract class SignalBlock extends AbstractPair {
+    private static final Map<UUID, Deque<WorldCoordinate>> savedData = new HashMap<UUID, Deque<WorldCoordinate>>();
     Map<WorldCoordinate, WorldCoordinate> trackCache = new HashMap<WorldCoordinate, WorldCoordinate>();
     Map<WorldCoordinate, TrackTools.TrackScan> trackScans = new HashMap<WorldCoordinate, TrackTools.TrackScan>();
     Set<WorldCoordinate> waitingForRetest = new HashSet<WorldCoordinate>();
     private WorldCoordinate trackLocation;
     private int update = rand.nextInt();
+    private UUID uuid = UUID.randomUUID();
 
     public SignalBlock(RailcraftTileEntity tile, int numPairs) {
         super(tile.getLocalizationTag(), tile, numPairs);
@@ -67,6 +72,42 @@ public abstract class SignalBlock extends AbstractPair {
                 Game.log(Level.DEBUG, msg + " source:[{0}, {1}, {2}] target:[null]", tile.xCoord, tile.yCoord, tile.zCoord);
             else
                 Game.log(Level.DEBUG, msg + " source:[{0}, {1}, {2}] target:[{3}, {4}, {5}]", tile.xCoord, tile.yCoord, tile.zCoord, coord.x, coord.y, coord.z);
+    }
+
+    @Override
+    protected void saveNBT(NBTTagCompound data) {
+        super.saveNBT(data);
+        MiscTools.writeUUID(data, "uuid", uuid);
+        if (RailcraftConfig.printSignalDebug()) {
+            Deque<WorldCoordinate> test = new LinkedList<WorldCoordinate>();
+            NBTTagList list = data.getTagList("pairings", 10);
+            for (byte entry = 0; entry < list.tagCount(); entry++) {
+                NBTTagCompound tag = list.getCompoundTagAt(entry);
+                int[] c = tag.getIntArray("coords");
+                test.add(new WorldCoordinate(c[0], c[1], c[2], c[3]));
+            }
+            boolean isConsistent = test.containsAll(getPairs());
+            printDebug("Signal Block saved NBT. [{0}, {1}, {2}] [verified: {3}] [data: {4}]", tile.xCoord, tile.yCoord, tile.zCoord, isConsistent, test);
+            savedData.put(uuid, new LinkedList<WorldCoordinate>(pairings));
+        }
+    }
+
+    @Override
+    protected void loadNBT(NBTTagCompound data) {
+        super.loadNBT(data);
+        uuid = MiscTools.readUUID(data, "uuid");
+        if (RailcraftConfig.printSignalDebug()) {
+            String isConsistent = "unknown";
+            Deque<WorldCoordinate> lastSave = savedData.get(uuid);
+            if (lastSave != null) {
+                if (pairings.containsAll(lastSave))
+                    isConsistent = "true";
+                else
+                    isConsistent = "false";
+            }
+
+            printDebug("Signal Block loaded NBT. [{0}, {1}, {2}] [verified: {3}] data: {4}", tile.xCoord, tile.yCoord, tile.zCoord, isConsistent, pairings);
+        }
     }
 
     public void clearSignalBlockPairing(WorldCoordinate other, String reason, Object... args) {
