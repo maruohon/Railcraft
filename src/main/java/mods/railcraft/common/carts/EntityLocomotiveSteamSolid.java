@@ -8,18 +8,21 @@
  */
 package mods.railcraft.common.carts;
 
+import mods.railcraft.api.carts.CartTools;
+import mods.railcraft.api.carts.IItemCart;
+import mods.railcraft.api.carts.ITrainTransferHelper;
 import mods.railcraft.api.carts.locomotive.LocomotiveRenderType;
-import mods.railcraft.common.core.RailcraftConfig;
 import mods.railcraft.common.fluids.FluidItemHelper;
 import mods.railcraft.common.fluids.Fluids;
 import mods.railcraft.common.gui.EnumGui;
 import mods.railcraft.common.gui.GuiHandler;
 import mods.railcraft.common.items.ItemTicket;
-import mods.railcraft.common.plugins.forge.FuelPlugin;
 import mods.railcraft.common.util.inventory.InvTools;
+import mods.railcraft.common.util.inventory.filters.StackFilter;
 import mods.railcraft.common.util.inventory.wrappers.InventoryMapper;
 import mods.railcraft.common.util.misc.Game;
 import mods.railcraft.common.util.steam.SolidFuelProvider;
+import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -27,12 +30,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import org.apache.logging.log4j.Level;
 
 /**
  * @author CovertJaguar <http://www.railcraft.info/>
  */
-public class EntityLocomotiveSteamSolid extends EntityLocomotiveSteam implements ISidedInventory {
+public class EntityLocomotiveSteamSolid extends EntityLocomotiveSteam implements ISidedInventory, IItemCart {
     private static final int SLOT_BURN = 2;
     private static final int SLOT_FUEL_A = 3;
     private static final int SLOT_FUEL_B = 4;
@@ -94,6 +96,15 @@ public class EntityLocomotiveSteamSolid extends EntityLocomotiveSteam implements
         if (Game.isHost(worldObj)) {
             InvTools.moveOneItem(invStock, invBurn);
             InvTools.moveOneItem(invBurn, invWaterOutput, FluidContainerRegistry.EMPTY_BUCKET);
+            if (InvTools.isEmptySlot(invStock)) {
+                ItemStack stack = CartTools.transferHelper.pullStack(this, StackFilter.FUEL);
+                if (stack != null)
+                    InvTools.moveItemStack(stack, invStock);
+            }
+            if (isSafeToFill() && tankWater.getFluidAmount() < tankWater.getCapacity() / 2) {
+                FluidStack pulled = CartTools.transferHelper.pullFluid(this, Fluids.WATER.getB(1));
+                tankWater.fill(pulled, true);
+            }
         }
     }
 
@@ -146,7 +157,7 @@ public class EntityLocomotiveSteamSolid extends EntityLocomotiveSteam implements
             case SLOT_FUEL_A:
             case SLOT_FUEL_B:
             case SLOT_FUEL_C:
-                return FuelPlugin.getBurnTime(stack) > 0;
+                return StackFilter.FUEL.matches(stack);
             case SLOT_LIQUID_INPUT:
                 return FluidItemHelper.containsFluid(stack, Fluids.WATER.get(1));
             case SLOT_TICKET:
@@ -154,5 +165,20 @@ public class EntityLocomotiveSteamSolid extends EntityLocomotiveSteam implements
             default:
                 return false;
         }
+    }
+
+    @Override
+    public boolean canPassItemRequests() {
+        return true;
+    }
+
+    @Override
+    public boolean canAcceptPushedItem(EntityMinecart requester, ItemStack stack) {
+        return StackFilter.FUEL.matches(stack);
+    }
+
+    @Override
+    public boolean canProvidePulledItem(EntityMinecart requester, ItemStack stack) {
+        return false;
     }
 }

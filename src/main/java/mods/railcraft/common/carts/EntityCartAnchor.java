@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import mods.railcraft.api.carts.*;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,9 +25,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
-import mods.railcraft.api.carts.ICartContentsTextureProvider;
-import mods.railcraft.api.carts.IItemTransfer;
-import mods.railcraft.api.carts.IMinecart;
 import mods.railcraft.common.blocks.RailcraftBlocks;
 import mods.railcraft.common.blocks.machine.alpha.EnumMachineAlpha;
 import mods.railcraft.common.core.Railcraft;
@@ -47,7 +45,7 @@ import mods.railcraft.common.util.misc.IAnchor;
 import mods.railcraft.common.util.misc.MiscTools;
 import org.apache.logging.log4j.Level;
 
-public class EntityCartAnchor extends CartTransferBase implements ICartContentsTextureProvider, IAnchor, IMinecart {
+public class EntityCartAnchor extends CartContainerBase implements ICartContentsTextureProvider, IAnchor, IMinecart {
     public static final byte TICKET_FLAG = 6;
     private static final byte ANCHOR_RADIUS = 2;
     private static final byte MAX_CHUNKS = 25;
@@ -61,12 +59,10 @@ public class EntityCartAnchor extends CartTransferBase implements ICartContentsT
 
     public EntityCartAnchor(World world) {
         super(world);
-        passThrough = true;
     }
 
     public EntityCartAnchor(World world, double x, double y, double z) {
         super(world, x, y, z);
-        passThrough = true;
     }
 
     @Override
@@ -129,31 +125,17 @@ public class EntityCartAnchor extends CartTransferBase implements ICartContentsT
     }
 
     private void stockFuel() {
-        LinkageManager lm = LinkageManager.instance();
-        EntityMinecart link = lm.getLinkedCartA(this);
-        if (link instanceof IItemTransfer)
-            requestFuel((IItemTransfer) link);
-
-        link = lm.getLinkedCartB(this);
-        if (link instanceof IItemTransfer)
-            requestFuel((IItemTransfer) link);
-    }
-
-    private void requestFuel(IItemTransfer cart) {
         ItemStack stack = getStackInSlot(0);
         if (stack != null && !getFuelMap().containsKey(stack)) {
-            stack = cart.offerItem(this, stack);
-            setInventorySlotContents(0, stack);
+            CartTools.offerOrDropItem(this, stack);
+            setInventorySlotContents(0, null);
             return;
         }
-        for (ItemKey item : getFuelMap().keySet()) {
-            if (stack == null) {
-                stack = cart.requestItem(this, item.asStack());
-                if (stack != null) {
-                    InvTools.moveItemStack(stack, this);
-                    break;
-                }
-            }
+        stack = getStackInSlot(0);
+        if (stack == null) {
+            ItemStack found = CartTools.transferHelper.pullStack(this, getFuelMap().getStackFilter());
+            if (found != null)
+                InvTools.moveItemStack(found, this);
         }
     }
 
