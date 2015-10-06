@@ -41,8 +41,8 @@ public class ContainerEngravingBench extends RailcraftContainer {
     }
 
     @Override
-    public void detectAndSendChanges() {
-        super.detectAndSendChanges();
+    public void sendUpdateToClient() {
+        super.sendUpdateToClient();
         EnergyStorage storage = tile.getEnergyStorage();
         for (Object crafter : crafters) {
             ICrafting icrafting = (ICrafting) crafter;
