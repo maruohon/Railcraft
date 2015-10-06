@@ -10,12 +10,15 @@ package mods.railcraft.common.util.crafting;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
+import mods.railcraft.common.carts.EntityCartFiltered;
 import mods.railcraft.common.carts.EntityCartTank;
+import mods.railcraft.common.carts.ICartType;
 import mods.railcraft.common.fluids.FluidItemHelper;
+import mods.railcraft.common.util.inventory.InvTools;
+import mods.railcraft.common.util.inventory.wrappers.IInvSlot;
+import mods.railcraft.common.util.inventory.wrappers.InventoryIterator;
 import net.minecraft.item.ItemStack;
 import mods.railcraft.common.carts.EnumCart;
-import mods.railcraft.common.carts.ItemCart;
-import mods.railcraft.common.fluids.FluidHelper;
 import mods.railcraft.common.items.firestone.ItemFirestoneCracked;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -35,21 +38,22 @@ public class CraftingHandler {
                 count++;
                 if (stack.getItem() == ItemFirestoneCracked.item)
                     craftMatrix.setInventorySlotContents(i, null);
-                EnumCart cartType = EnumCart.getCartType(stack);
+                ICartType cartType = EnumCart.getCartType(stack);
                 if (cartType != null && cartType != EnumCart.BASIC)
                     cartItem = stack;
             }
         }
         if (cartItem != null) {
-
-            if (EnumCart.getCartType(result) == EnumCart.TANK && EnumCart.getCartType(cartItem) == EnumCart.TANK) {
-                if (EntityCartTank.getFilterFromCartItem(result) != null)
-                    for (int i = 0; i < craftMatrix.getSizeInventory(); i++) {
-                        ItemStack stack = craftMatrix.getStackInSlot(i);
-                        if (stack != null && FluidItemHelper.isContainer(stack)) {
+            CartFilterRecipe.FilterType type = CartFilterRecipe.FilterType.fromCartType(EnumCart.getCartType(cartItem));
+            if (type != null && EnumCart.getCartType(result) == EnumCart.getCartType(cartItem)) {
+                ItemStack filterItem = EntityCartFiltered.getFilterFromCartItem(result);
+                if (filterItem != null)
+                    for (IInvSlot slot : InventoryIterator.getIterable(craftMatrix).notNull()) {
+                        ItemStack stack = slot.getStackInSlot();
+                        if (InvTools.isItemEqual(stack, filterItem)) {
                             if (!player.inventory.addItemStackToInventory(stack))
                                 player.dropPlayerItemWithRandomChoice(stack, false);
-                            craftMatrix.setInventorySlotContents(i, null);
+                            slot.setStackInSlot(null);
                         }
                     }
                 return;

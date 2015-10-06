@@ -11,13 +11,18 @@ package mods.railcraft.common.carts;
 import com.mojang.authlib.GameProfile;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+
 import java.util.List;
+
+import mods.railcraft.common.gui.tooltips.ToolTipLine;
+import mods.railcraft.common.plugins.forge.LocalizationPlugin;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemMinecart;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import mods.railcraft.api.core.items.IMinecartItem;
 import mods.railcraft.common.core.RailcraftConfig;
@@ -28,10 +33,10 @@ import net.minecraft.block.BlockDispenser;
 
 public class ItemCart extends ItemMinecart implements IMinecartItem {
 
-    private final EnumCart type;
+    private final ICartType type;
     private int rarity = 0;
 
-    public ItemCart(EnumCart cart) {
+    public ItemCart(ICartType cart) {
         super(0);
         maxStackSize = RailcraftConfig.getMinecartStackSize();
         this.type = cart;
@@ -69,7 +74,7 @@ public class ItemCart extends ItemMinecart implements IMinecartItem {
         return false;
     }
 
-    public EnumCart getCartType() {
+    public ICartType getCartType() {
         return type;
     }
 
@@ -89,6 +94,10 @@ public class ItemCart extends ItemMinecart implements IMinecartItem {
         ToolTip tip = ToolTip.buildToolTip(stack.getUnlocalizedName() + ".tip");
         if (tip != null)
             info.addAll(tip.convertToStrings());
+        ItemStack filter = EntityCartFiltered.getFilterFromCartItem(stack);
+        if (filter != null) {
+            info.add(EnumChatFormatting.BLUE + LocalizationPlugin.translate("railcraft.gui.filter") + ": " + filter.getDisplayName());
+        }
     }
 
 }

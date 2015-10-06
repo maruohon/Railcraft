@@ -107,8 +107,8 @@ public abstract class InvTools {
         if (tile == null || !(tile instanceof IInventory))
             return null;
 
-        if (!PipeManager.canExtractItems(null, tile.getWorldObj(), tile.xCoord, tile.yCoord, tile.zCoord))
-            return null;
+//        if (!PipeManager.canExtractItems(null, tile.getWorldObj(), tile.xCoord, tile.yCoord, tile.zCoord))
+//            return null;
 
         if (tile instanceof TileEntityChest) {
             TileEntityChest chest = (TileEntityChest) tile;
@@ -384,6 +384,16 @@ public abstract class InvTools {
         return count;
     }
 
+    public static int countStacks(IInventory inv) {
+        int count = 0;
+        for (IInvSlot slot : InventoryIterator.getIterable(inv)) {
+            ItemStack stack = slot.getStackInSlot();
+            if (stack != null)
+                count++;
+        }
+        return count;
+    }
+
     /**
      * Returns true if the inventory contains the specified item.
      *
@@ -653,6 +663,14 @@ public abstract class InvTools {
             if (a.getItemDamage() != b.getItemDamage())
                 return false;
         }
+        return true;
+    }
+
+    public static boolean isCartItemEqual(final ItemStack a, final ItemStack b, final boolean matchDamage) {
+        if (!isItemEqual(a, b, matchDamage, false))
+            return false;
+        if (a.hasDisplayName() && !a.getDisplayName().equals(b.getDisplayName()))
+            return false;
         return true;
     }
 

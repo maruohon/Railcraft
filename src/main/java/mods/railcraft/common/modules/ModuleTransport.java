@@ -15,13 +15,12 @@ import mods.railcraft.common.blocks.machine.alpha.EnumMachineAlpha;
 import mods.railcraft.common.blocks.machine.beta.EnumMachineBeta;
 import mods.railcraft.common.blocks.machine.gamma.EnumMachineGamma;
 import mods.railcraft.common.carts.EnumCart;
-import mods.railcraft.common.items.ItemGear.EnumGear;
 import mods.railcraft.common.items.ItemNugget;
 import mods.railcraft.common.items.ItemPlate.EnumPlate;
 import mods.railcraft.common.items.RailcraftItem;
 import mods.railcraft.common.items.RailcraftToolItems;
 import mods.railcraft.common.plugins.forge.CraftingPlugin;
-import mods.railcraft.common.util.crafting.TankCartFilterRecipe;
+import mods.railcraft.common.util.crafting.CartFilterRecipe;
 import mods.railcraft.common.util.inventory.InvTools;
 import mods.railcraft.common.util.misc.EnumColor;
 import net.minecraft.init.Blocks;
@@ -32,8 +31,6 @@ import net.minecraft.init.Items;
  * @author CovertJaguar <http://www.railcraft.info>
  */
 public class ModuleTransport extends RailcraftModule {
-
-    private boolean tankCartEnabled = false;
 
     @Override
     public void initFirst() {
@@ -69,7 +66,7 @@ public class ModuleTransport extends RailcraftModule {
                     "SSS",
                     "SLS",
                     "SDS",
-                    'S', new ItemStack(Blocks.cobblestone),
+                    'S', "cobblestone",
                     'D', detector,
                     'L', new ItemStack(Blocks.hopper));
 
@@ -95,7 +92,7 @@ public class ModuleTransport extends RailcraftModule {
                     "SSS",
                     "SDS",
                     "SLS",
-                    'S', new ItemStack(Blocks.cobblestone),
+                    'S', "cobblestone",
                     'D', detector,
                     'L', new ItemStack(Blocks.hopper));
 
@@ -152,7 +149,6 @@ public class ModuleTransport extends RailcraftModule {
         EnumCart cart = EnumCart.TANK;
 
         if (cart.setup()) {
-            tankCartEnabled = true;
             if (EnumMachineBeta.TANK_IRON_GAUGE.isAvaliable()) {
                 CraftingPlugin.addShapedRecipe(cart.getCartItem(),
                         "T",
@@ -165,12 +161,24 @@ public class ModuleTransport extends RailcraftModule {
                         "GGG",
                         "GMG",
                         "GGG",
-                        'G', new ItemStack(Blocks.glass),
+                        'G', "blockGlassColorless",
                         'M', Items.minecart);
                 cart.setContents(new ItemStack(Blocks.glass, 8));
             }
             CraftingPlugin.addShapelessRecipe(new ItemStack(Items.minecart), cart.getCartItem());
-            CraftingPlugin.addRecipe(new TankCartFilterRecipe());
+            CraftingPlugin.addRecipe(new CartFilterRecipe());
+        }
+
+        cart = EnumCart.CARGO;
+
+        if (cart.setup()) {
+            CraftingPlugin.addShapedRecipe(cart.getCartItem(),
+                    "B",
+                    "M",
+                    'B', Blocks.trapped_chest,
+                    'M', Items.minecart);
+            CraftingPlugin.addShapelessRecipe(new ItemStack(Items.minecart), cart.getCartItem());
+            CraftingPlugin.addRecipe(new CartFilterRecipe());
         }
 
     }

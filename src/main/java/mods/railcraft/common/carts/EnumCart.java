@@ -27,13 +27,14 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 
-public enum EnumCart {
+public enum EnumCart implements ICartType {
 
     BASIC(0, EntityCartBasic.class, null),
     CHEST(0, EntityCartChest.class, new ItemStack(Blocks.chest)),
     FURNACE(0, EntityCartFurnace.class, new ItemStack(Blocks.furnace)),
     TNT_WOOD(0, EntityCartTNTWood.class, new ItemStack(Blocks.tnt)),
     TANK(0, EntityCartTank.class, null),
+    CARGO(0, EntityCartCargo.class, new ItemStack(Blocks.trapped_chest)),
     ANCHOR(0, EntityCartAnchor.class, null),
     WORK(0, EntityCartWork.class, new ItemStack(Blocks.crafting_table)),
     TRACK_RELAYER(1, EntityCartTrackRelayer.class, null),
@@ -52,7 +53,8 @@ public enum EnumCart {
     ENERGY_MFE(0, EntityCartEnergyMFE.class, null),
     HOPPER(0, EntityMinecartHopper.class, new ItemStack(Blocks.hopper)),
     TRACK_LAYER(1, EntityCartTrackLayer.class, null),
-    TRACK_REMOVER(1, EntityCartTrackRemover.class, null);
+    TRACK_REMOVER(1, EntityCartTrackRemover.class, null),
+    COMMAND_BLOCK(3, EntityCartCommand.class, null);
     public static final EnumCart[] VALUES = values();
     private final Class<? extends EntityMinecart> type;
     private final byte id;
@@ -60,7 +62,7 @@ public enum EnumCart {
     private ItemStack contents = null;
     private ItemStack cartItem;
 
-    private EnumCart(int rarity, Class<? extends EntityMinecart> type, ItemStack contents) {
+    EnumCart(int rarity, Class<? extends EntityMinecart> type, ItemStack contents) {
         int entityId = -1;
         try {
             entityId = (byte) EntityIDs.class.getField("CART_" + name()).getInt(null);
@@ -73,14 +75,17 @@ public enum EnumCart {
         this.contents = contents;
     }
 
+    @Override
     public byte getId() {
         return id;
     }
 
+    @Override
     public String getTag() {
         return "railcraft.cart." + name().toLowerCase(Locale.ENGLISH).replace('_', '.');
     }
 
+    @Override
     public Class<? extends EntityMinecart> getCartClass() {
         return type;
     }
@@ -89,6 +94,7 @@ public enum EnumCart {
         contents = stack.copy();
     }
 
+    @Override
     public ItemStack getContents() {
         switch (this) {
             case TANK:
@@ -102,6 +108,7 @@ public enum EnumCart {
         }
     }
 
+    @Override
     public EntityMinecart makeCart(ItemStack stack, World world, double i, double j, double k) {
         try {
             Constructor<? extends EntityMinecart> con = type.getConstructor(World.class, double.class, double.class, double.class);
@@ -118,6 +125,7 @@ public enum EnumCart {
     /**
      * @return the cartItem
      */
+    @Override
     public ItemStack getCartItem() {
         if (cartItem == null)
             return null;
@@ -177,12 +185,13 @@ public enum EnumCart {
         return false;
     }
 
+    @Override
     public boolean isEnabled() {
         String tag = getTag();
         return RailcraftConfig.isCartEnabled(tag);
     }
 
-    public static EnumCart fromClass(Class<? extends EntityMinecart> cls) {
+    public static ICartType fromClass(Class<? extends EntityMinecart> cls) {
         for (EnumCart cart : VALUES) {
             if (cls.equals(cart.type))
                 return cart;
@@ -190,11 +199,11 @@ public enum EnumCart {
         return BASIC;
     }
 
-    public static EnumCart fromCart(EntityMinecart cart) {
+    public static ICartType fromCart(EntityMinecart cart) {
         return fromClass(cart.getClass());
     }
 
-    public static EnumCart getCartType(ItemStack cart) {
+    public static ICartType getCartType(ItemStack cart) {
         if (cart == null)
             return null;
         if (cart.getItem() == Items.minecart)

@@ -9,6 +9,8 @@
 package mods.railcraft.common.modules;
 
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -19,7 +21,7 @@ import java.util.Set;
 
 import mods.railcraft.api.carts.CartTools;
 import mods.railcraft.common.commands.CommandDebug;
-import mods.railcraft.common.commands.RootCommand;
+import net.minecraft.entity.Entity;
 import org.apache.logging.log4j.Level;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.entity.monster.EntityEnderman;
@@ -36,7 +38,6 @@ import mods.railcraft.api.helpers.Helpers;
 import mods.railcraft.api.signals.SignalTools;
 import mods.railcraft.client.sounds.SoundLimiterTicker;
 import mods.railcraft.common.blocks.aesthetics.cube.EnumCube;
-import mods.railcraft.common.blocks.aesthetics.post.EnumPost;
 import mods.railcraft.common.blocks.machine.IEnumMachine;
 import mods.railcraft.common.blocks.machine.MachineTileRegistery;
 import mods.railcraft.common.blocks.machine.MultiBlockHelper;
@@ -85,6 +86,7 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.RecipeSorter;
 
 public class ModuleCore extends RailcraftModule {
@@ -142,7 +144,10 @@ public class ModuleCore extends RailcraftModule {
         RecipeSorter.register("railcraft:locomotive.painting", LocomotivePaintingRecipe.class, RecipeSorter.Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("railcraft:routing.table.copy", RoutingTableCopyRecipe.class, RecipeSorter.Category.SHAPED, "after:minecraft:shaped");
         RecipeSorter.register("railcraft:routing.ticket.copy", RoutingTicketCopyRecipe.class, RecipeSorter.Category.SHAPED, "after:minecraft:shaped");
-        RecipeSorter.register("railcraft:tank.cart.filter", TankCartFilterRecipe.class, RecipeSorter.Category.SHAPELESS, "after:minecraft:shapeless");
+        RecipeSorter.register("railcraft:cart.filter", CartFilterRecipe.class, RecipeSorter.Category.SHAPELESS, "after:minecraft:shapeless");
+
+        OreDictionary.registerOre("chestWood", Blocks.chest);
+        OreDictionary.registerOre("craftingTableWood", Blocks.crafting_table);
     }
 
     @Override
@@ -173,6 +178,7 @@ public class ModuleCore extends RailcraftModule {
 
         FMLCommonHandler.instance().bus().register(new CraftingHandler());
         FMLCommonHandler.instance().bus().register(new SoundLimiterTicker());
+        FMLCommonHandler.instance().bus().register(this);
 
         if (RailcraftConfig.useCollisionHandler()) {
             if (EntityMinecart.getCollisionHandler() != null)
@@ -206,6 +212,7 @@ public class ModuleCore extends RailcraftModule {
         }
 
         // Items
+        replaceVanillaCart(EnumCart.COMMAND_BLOCK, Items.command_block_minecart, "MinecartCommandBlock", 40);
         replaceVanillaCart(EnumCart.BASIC, Items.minecart, "MinecartRideable", 42);
         replaceVanillaCart(EnumCart.CHEST, Items.chest_minecart, "MinecartChest", 43);
         replaceVanillaCart(EnumCart.FURNACE, Items.furnace_minecart, "MinecartFurnace", 44);
@@ -232,7 +239,7 @@ public class ModuleCore extends RailcraftModule {
         Blocks.activator_rail.setHarvestLevel("pickaxe", 0);
         Blocks.activator_rail.setHarvestLevel("crowbar", 0);
 
-        // Define Recipies
+        // Define Recipes
         if (RailcraftConfig.getRecipeConfig("railcraft.cart.bronze")) {
             IRecipe recipe = new ShapedOreRecipe(new ItemStack(Items.minecart), false, new Object[]{
                     "I I",
@@ -318,7 +325,6 @@ public class ModuleCore extends RailcraftModule {
     }
 
     @Override
-
     public void initSecond() {
         if (RailcraftConfig.useCreosoteFurnaceRecipes() || !EnumMachineAlpha.COKE_OVEN.isAvaliable()) {
             FurnaceRecipes.smelting().func_151394_a(new ItemStack(Items.coal, 1, 0), FluidContainers.getCreosoteOilBottle(2), 0.0F);
@@ -352,6 +358,7 @@ public class ModuleCore extends RailcraftModule {
     @Override
     public void postInit() {
         RailcraftFluids.postInitFluids();
+        RailcraftItem.definePostRecipes();
 
         GameRegistry.registerFuelHandler(FuelPlugin.getFuelHandler());
 
@@ -395,5 +402,15 @@ public class ModuleCore extends RailcraftModule {
 //        System.out.printf("Ran for %d ticks.%n", ticks);
 //        System.out.printf("Steam Produced=%s%n", tankSteam.getFluidAmount());
 //        System.exit(0);
+    }
+
+    @SubscribeEvent
+    public void tick(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.player.ridingEntity instanceof EntityMinecart) {
+            Entity p = event.player;
+            EntityMinecart cart = (EntityMinecart) event.player.ridingEntity;
+            if (Train.getTrain(cart).size() > 1)
+                CartUtils.dismount(cart, p.posX, p.posY + 1, p.posZ);
+        }
     }
 }

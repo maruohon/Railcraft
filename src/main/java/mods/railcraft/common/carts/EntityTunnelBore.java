@@ -8,6 +8,12 @@
  */
 package mods.railcraft.common.carts;
 
+import com.mojang.authlib.GameProfile;
+
+import mods.railcraft.common.plugins.forge.PlayerPlugin;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import mods.railcraft.api.carts.CartTools;
 import mods.railcraft.api.carts.ILinkableCart;
 import mods.railcraft.api.carts.bore.IBoreHead;
@@ -220,6 +226,11 @@ public class EntityTunnelBore extends CartContainerBase implements IInventory, I
         }
 
         return true;
+    }
+
+    @Override
+    public ICartType getCartType() {
+        return EnumCart.BORE;
     }
 
     private boolean isMinableBlock(Block block, int meta) {
@@ -708,6 +719,14 @@ public class EntityTunnelBore extends CartContainerBase implements IInventory, I
 
         if (!canMineBlock(x, y, z, block, meta))
             return false;
+
+        // Start of Event Fire
+        BreakEvent breakEvent = new BreakEvent(x, y, z, worldObj, block, meta, PlayerPlugin.getFakePlayer((WorldServer) worldObj, posX, posY, posZ));
+        MinecraftForge.EVENT_BUS.post(breakEvent);
+
+        if (breakEvent.isCanceled())
+            return false;
+        // End of Event Fire
 
         ArrayList<ItemStack> items = block.getDrops(worldObj, x, y, z, meta, 0);
 

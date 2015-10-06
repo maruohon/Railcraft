@@ -33,6 +33,11 @@ public class EntityCartChest extends CartContainerBase implements IItemCart {
     }
 
     @Override
+    public ICartType getCartType() {
+        return EnumCart.CHEST;
+    }
+
+    @Override
     public List<ItemStack> getItemsDropped() {
         List<ItemStack> items = new ArrayList<ItemStack>();
         if (RailcraftConfig.doCartsBreakOnDrop()) {
@@ -49,11 +54,6 @@ public class EntityCartChest extends CartContainerBase implements IItemCart {
         if (hasCustomInventoryName())
             stack.setStackDisplayName(getCommandSenderName());
         return stack;
-    }
-
-    @Override
-    public double getDrag() {
-        return CartConstants.STANDARD_DRAG;
     }
 
     @Override

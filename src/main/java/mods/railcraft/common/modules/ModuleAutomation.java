@@ -16,10 +16,7 @@ import mods.railcraft.common.blocks.detector.EnumDetector;
 import mods.railcraft.common.blocks.machine.alpha.EnumMachineAlpha;
 import mods.railcraft.common.blocks.machine.alpha.TamingInteractHandler;
 import mods.railcraft.common.blocks.machine.gamma.EnumMachineGamma;
-import mods.railcraft.common.carts.EnumCart;
-import mods.railcraft.common.carts.ItemBoreHeadDiamond;
-import mods.railcraft.common.carts.ItemBoreHeadIron;
-import mods.railcraft.common.carts.ItemBoreHeadSteel;
+import mods.railcraft.common.carts.*;
 import mods.railcraft.common.core.RailcraftConfig;
 import mods.railcraft.common.items.ItemCrowbarReinforced;
 import mods.railcraft.common.items.ItemPlate.EnumPlate;
@@ -58,7 +55,7 @@ public class ModuleAutomation extends RailcraftModule {
                     "XXX",
                     "XPX",
                     "XXX",
-                    'X', Blocks.stone,
+                    'X', "stone",
                     'P', Blocks.stone_pressure_plate);
             CraftingPlugin.addShapedRecipe(new ItemStack(blockDetector, 1, EnumDetector.EMPTY.ordinal()),
                     "XXX",
@@ -82,7 +79,7 @@ public class ModuleAutomation extends RailcraftModule {
                     "XXX",
                     "XPX",
                     "XXX",
-                    'X', Blocks.cobblestone,
+                    'X', "cobblestone",
                     'P', Blocks.stone_pressure_plate);
             CraftingPlugin.addShapedRecipe(new ItemStack(blockDetector, 1, EnumDetector.PLAYER.ordinal()),
                     "XXX",

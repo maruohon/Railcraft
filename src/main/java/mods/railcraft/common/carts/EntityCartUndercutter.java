@@ -11,6 +11,7 @@ package mods.railcraft.common.carts;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
@@ -25,7 +26,6 @@ import mods.railcraft.common.gui.EnumGui;
 import mods.railcraft.common.gui.GuiHandler;
 import mods.railcraft.common.plugins.forge.LocalizationPlugin;
 import mods.railcraft.common.util.inventory.InvTools;
-import mods.railcraft.common.util.misc.BallastRegistry;
 import mods.railcraft.common.util.misc.Game;
 import mods.railcraft.common.util.sounds.SoundHelper;
 import net.minecraft.block.BlockRailBase;
@@ -77,6 +77,11 @@ public class EntityCartUndercutter extends CartMaintenancePatternBase {
         prevPosX = d;
         prevPosY = d1;
         prevPosZ = d2;
+    }
+
+    @Override
+    public ICartType getCartType() {
+        return EnumCart.UNDERCUTTER;
     }
 
     @Override
@@ -162,7 +167,7 @@ public class EntityCartUndercutter extends CartMaintenancePatternBase {
         if (blockToReplace == null || !blockMatches(blockToReplace, oldMeta, exist))
             return;
 
-        if (safeToReplace(x, y, z, stock)) {
+        if (safeToReplace(x, y, z)) {
             Block stockBlock = InvTools.getBlockFromStack(stock);
             List<ItemStack> drops = blockToReplace.getDrops(worldObj, x, y, z, oldMeta, 0);
             ItemBlock item = (ItemBlock) stock.getItem();
@@ -195,19 +200,19 @@ public class EntityCartUndercutter extends CartMaintenancePatternBase {
         return false;
     }
 
-    private boolean safeToReplace(int x, int y, int z, ItemStack stock) {
-        if (!BallastRegistry.isItemBallast(stock))
-            return true;
-
-        if (worldObj.isAirBlock(x, y - 1, z))
+    private boolean safeToReplace(int x, int y, int z) {
+        if (worldObj.isAirBlock(x, y, z))
             return false;
 
-        Block block = worldObj.getBlock(x, y - 1, z);
+        Block block = worldObj.getBlock(x, y, z);
 
         if (block.getMaterial().isLiquid())
             return false;
 
-        return !block.isReplaceable(worldObj, x, y - 1, z);
+        if (block.getBlockHardness(worldObj, x, y, z) < 0)
+            return false;
+
+        return !block.isReplaceable(worldObj, x, y, z);
     }
 
     @Override
@@ -221,7 +226,7 @@ public class EntityCartUndercutter extends CartMaintenancePatternBase {
     public String getInventoryName() {
         return LocalizationPlugin.translate(EnumCart.UNDERCUTTER.getTag());
     }
-    
+
     @Override
     public int[] getAccessibleSlotsFromSide(int side) {
         return SLOTS;
